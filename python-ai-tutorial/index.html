@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python AI 全栈教程 - 从算法到 Agent</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+      background: #1E1E2E;
+      color: #CDD6F4;
+      overflow: hidden;
+    }
+    
+    [data-composition-id="main"] {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      background: #1E1E2E;
+      overflow: hidden;
+    }
+    
+    /* 背景效果 */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(137, 180, 250, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(137, 180, 250, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+    
+    /* ===== 场景通用样式 ===== */
+    .scene {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 60px 80px 140px 80px;
+      opacity: 0;
+    }
+    
+    .scene:first-child { opacity: 1; }
+    
+    /* ===== 通用组件 ===== */
+    .section-header {
+      margin-bottom: 40px;
+      flex-shrink: 0;
+    }
+    
+    .chapter-tag {
+      display: inline-block;
+      font-size: 14px;
+      color: #89B4FA;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: 6px 16px;
+      background: rgba(137, 180, 250, 0.15);
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    
+    .section-title {
+      font-size: 44px;
+      font-weight: 700;
+      color: #CDD6F4;
+      line-height: 1.2;
+    }
+    
+    .section-subtitle {
+      font-size: 20px;
+      color: #6C7086;
+      margin-top: 10px;
+    }
+    
+    /* ===== 代码块样式 ===== */
+    .code-panel {
+      background: #181825;
+      border-radius: 16px;
+      border: 1px solid rgba(137, 180, 250, 0.2);
+      overflow: hidden;
+      flex: 1;
+    }
+    
+    .code-header {
+      background: #313244;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .code-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #F38BA8; }
+    .dot-yellow { background: #F9E2AF; }
+    .dot-green { background: #A6E3A1; }
+    
+    .code-filename {
+      margin-left: 12px;
+      font-size: 14px;
+      color: #6C7086;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .code-body {
+      padding: 20px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+    
+    .code-line {
+      display: flex;
+      margin: 4px 0;
+    }
+    
+    .line-num {
+      color: #45475A;
+      min-width: 40px;
+      text-align: right;
+      padding-right: 20px;
+      user-select: none;
+    }
+    
+    .line-content { flex: 1; }
+    
+    .keyword { color: #CBA6F7; }
+    .string { color: #F38BA8; }
+    .number { color: #FAB387; }
+    .function { color: #89B4FA; }
+    .comment { color: #6C7086; font-style: italic; }
+    .variable { color: #F9E2AF; }
+    .operator { color: #89DCEB; }
+    
+    /* ===== 内容布局 ===== */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      flex: 1;
+    }
+    
+    .info-card {
+      background: #2D2D44;
+      border-radius: 14px;
+      padding: 20px;
+      border: 1px solid rgba(137, 180, 250, 0.1);
+    }
+    
+    .info-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #89B4FA;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .info-icon { font-size: 20px; }
+    
+    .info-list {
+      list-style: none;
+    }
+    
+    .info-list li {
+      padding: 8px 0;
+      color: #CDD6F4;
+      font-size: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    
+    .info-list li::before {
+      content: '→';
+      color: #A6E3A1;
+    }
+    
+    /* ===== 步骤指示器 ===== */
+    .step-indicator {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .step-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #45475A;
+      transition: all 0.3s;
+    }
+    
+    .step-dot.active {
+      background: #89B4FA;
+      box-shadow: 0 0 12px rgba(137, 180, 250, 0.5);
+    }
+    
+    /* ===== 开场场景 ===== */
+    .scene-intro {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding-bottom: 160px;
+    }
+    
+    .main-title {
+      font-size: 64px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #89B4FA 0%, #CBA6F7 50%, #A6E3A1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    
+    .intro-sub {
+      font-size: 22px;
+      color: #6C7086;
+      margin-bottom: 40px;
+    }
+    
+    .roadmap {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 1100px;
+    }
+    
+    .roadmap-item {
+      background: #2D2D44;
+      border-radius: 14px;
+      padding: 20px 24px;
+      text-align: center;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+      min-width: 180px;
+    }
+    
+    .roadmap-item:hover {
+      border-color: #89B4FA;
+    }
+    
+    .roadmap-icon { font-size: 40px; margin-bottom: 10px; }
+    .roadmap-title { font-size: 18px; font-weight: 600; color: #CDD6F4; }
+    .roadmap-desc { font-size: 13px; color: #6C7086; margin-top: 6px; }
+    
+    /* ===== 算法场景 ===== */
+    .algorithm-flow {
+      display: flex;
+      gap: 16px;
+      align-items: stretch;
+      margin-top: 16px;
+    }
+    
+    .flow-step {
+      flex: 1;
+      background: #2D2D44;
+      border-radius: 10px;
+      padding: 16px;
+      border-left: 3px solid;
+    }
+    
+    .flow-step.step-1 { border-color: #89B4FA; }
+    .flow-step.step-2 { border-color: #CBA6F7; }
+    .flow-step.step-3 { border-color: #A6E3A1; }
+    
+    .step-num {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    
+    .step-1 .step-num { color: #89B4FA; }
+    .step-2 .step-num { color: #CBA6F7; }
+    .step-3 .step-num { color: #A6E3A1; }
+    
+    .step-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #CDD6F4;
+      margin-bottom: 6px;
+    }
+    
+    .step-desc {
+      font-size: 13px;
+      color: #6C7086;
+    }
+    
+    /* ===== ML 场景 ===== */
+    .ml-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      flex: 1;
+    }
+    
+    .ml-card {
+      background: #2D2D44;
+      border-radius: 14px;
+      padding: 20px;
+      border: 1px solid rgba(137, 180, 250, 0.1);
+    }
+    
+    .ml-card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #CDD6F4;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .ml-badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    
+    .badge-traditional { background: rgba(137, 180, 250, 0.2); color: #89B4FA; }
+    .badge-deep { background: rgba(166, 227, 161, 0.2); color: #A6E3A1; }
+    
+    /* ===== 总结场景 ===== */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      flex: 1;
+      align-items: start;
+    }
+    
+    .summary-card {
+      background: #2D2D44;
+      border-radius: 16px;
+      padding: 24px 16px;
+      text-align: center;
+      border: 2px solid;
+    }
+    
+    .summary-card.algorithm { border-color: #89B4FA; }
+    .summary-card.ml { border-color: #CBA6F7; }
+    .summary-card.dl { border-color: #F9E2AF; }
+    .summary-card.agent { border-color: #A6E3A1; }
+    
+    .summary-icon { font-size: 44px; margin-bottom: 12px; }
+    
+    .summary-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    
+    .summary-card.algorithm .summary-name { color: #89B4FA; }
+    .summary-card.ml .summary-name { color: #CBA6F7; }
+    .summary-card.dl .summary-name { color: #F9E2AF; }
+    .summary-card.agent .summary-name { color: #A6E3A1; }
+    
+    .summary-skills {
+      font-size: 13px;
+      color: #6C7086;
+      line-height: 1.7;
+    }
+    
+    /* ===== 播放控制面板 ===== */
+    .player-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(45, 45, 68, 0.95);
+      border: 1px solid #89B4FA;
+      border-radius: 12px;
+      padding: 14px 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 9999;
+      font-family: system-ui, sans-serif;
+      flex-wrap: wrap;
+      max-width: 90vw;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+    }
+    
+    .play-btn {
+      background: linear-gradient(135deg, #89B4FA, #CBA6F7);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      color: #1E1E2E;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .scene-btn {
+      background: rgba(137, 180, 250, 0.1);
+      border: 1px solid rgba(137, 180, 250, 0.3);
+      border-radius: 6px;
+      padding: 8px 14px;
+      color: #89B4FA;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    
+    .scene-btn:hover {
+      background: rgba(137, 180, 250, 0.2);
+      border-color: #89B4FA;
+    }
+    
+    .player-tip {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(137, 180, 250, 0.1);
+      border: 1px solid rgba(137, 180, 250, 0.3);
+      border-radius: 8px;
+      padding: 12px 20px;
+      color: #89B4FA;
+      font-size: 14px;
+      z-index: 9999;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div data-composition-id="main" data-width="1920" data-height="1080" data-start="0" data-duration="150">
+    <div class="grid-bg"></div>
+    
+    <!-- 场景 1: 开场 (0-12s) -->
+    <div class="scene scene-intro" id="scene-intro">
+      <h1 class="main-title">Python AI 全栈教程</h1>
+      <p class="intro-sub">从算法基础到 AI Agent，带你从零构建 AI 技能体系</p>
+      <div class="roadmap">
+        <div class="roadmap-item">
+          <div class="roadmap-icon">⚡</div>
+          <div class="roadmap-title">一般算法</div>
+          <div class="roadmap-desc">排序、查找、递归</div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-icon">📊</div>
+          <div class="roadmap-title">传统机器学习</div>
+          <div class="roadmap-desc">回归、分类、聚类</div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-icon">🧠</div>
+          <div class="roadmap-title">深度学习</div>
+          <div class="roadmap-desc">神经网络、CNN、RNN</div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-icon">🤖</div>
+          <div class="roadmap-title">AI Agent</div>
+          <div class="roadmap-desc">LangChain、工具调用</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 场景 2: 算法基础 (12-40s) -->
+    <div class="scene" id="scene-algorithm">
+      <div class="section-header">
+        <span class="chapter-tag">CHAPTER 01</span>
+        <h2 class="section-title">一般算法：编程的内功</h2>
+        <p class="section-subtitle">排序、查找、递归 — 这些是所有 AI 的基石</p>
+      </div>
+      <div class="content-grid">
+        <div class="code-panel">
+          <div class="code-header">
+            <span class="code-dot dot-red"></span>
+            <span class="code-dot dot-yellow"></span>
+            <span class="code-dot dot-green"></span>
+            <span class="code-filename">quick_sort.py</span>
+          </div>
+          <div class="code-body">
+            <div class="code-line"><span class="line-num">1</span><span class="line-content"><span class="keyword">def</span> <span class="function">quick_sort</span>(arr):</div>
+            <div class="code-line"><span class="line-num">2</span><span class="line-content">    <span class="keyword">if</span> len(arr) <= <span class="number">1</span>:</div>
+            <div class="code-line"><span class="line-num">3</span><span class="line-content">        <span class="keyword">return</span> arr</div>
+            <div class="code-line"><span class="line-num">4</span><span class="line-content">    </div>
+            <div class="code-line"><span class="line-num">5</span><span class="line-content">    pivot = arr[len(arr) // <span class="number">2</span>]</div>
+            <div class="code-line"><span class="line-num">6</span><span class="line-content">    left = [x <span class="keyword">for</span> x <span class="keyword">in</span> arr <span class="keyword">if</span> x < pivot]</div>
+            <div class="code-line"><span class="line-num">7</span><span class="line-content">    middle = [x <span class="keyword">for</span> x <span class="keyword">in</span> arr <span class="keyword">if</span> x == pivot]</div>
+            <div class="code-line"><span class="line-num">8</span><span class="line-content">    right = [x <span class="keyword">for</span> x <span class="keyword">in</span> arr <span class="keyword">if</span> x > pivot]</div>
+            <div class="code-line"><span class="line-num">9</span><span class="line-content">    </div>
+            <div class="code-line"><span class="line-num">10</span><span class="line-content">    <span class="keyword">return</span> quick_sort(left) + middle + quick_sort(right)</div>
+            <div class="code-line"><span class="line-num">11</span><span class="line-content"> </div>
+            <div class="code-line"><span class="line-num">12</span><span class="line-content"><span class="comment"># 测试</span></div>
+            <div class="code-line"><span class="line-num">13</span><span class="line-content">print(quick_sort([<span class="number">3</span>,<span class="number">1</span>,<span class="number">4</span>,<span class="number">1</span>,<span class="number">5</span>,<span class="number">9</span>]))</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-title">
+            <span class="info-icon">💡</span>
+            核心思想
+          </div>
+          <ul class="info-list">
+            <li><strong>分治法</strong>：大问题分解为小问题</li>
+            <li><strong>递归</strong>：函数调用自身</li>
+            <li><strong>时间复杂度</strong>：平均 O(n log n)</li>
+            <li><strong>空间复杂度</strong>：O(n)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 场景 3: 二分查找 (40-60s) -->
+    <div class="scene" id="scene-binary">
+      <div class="section-header">
+        <span class="chapter-tag">CHAPTER 01</span>
+        <h2 class="section-title">二分查找：高效的搜索</h2>
+        <p class="section-subtitle">有序数组查找，时间复杂度 O(log n)</p>
+      </div>
+      <div class="content-grid">
+        <div class="code-panel">
+          <div class="code-header">
+            <span class="code-dot dot-red"></span>
+            <span class="code-dot dot-yellow"></span>
+            <span class="code-dot dot-green"></span>
+            <span class="code-filename">binary_search.py</span>
+          </div>
+          <div class="code-body">
+            <div class="code-line"><span class="line-num">1</span><span class="line-content"><span class="keyword">def</span> <span class="function">binary_search</span>(arr, target):</div>
+            <div class="code-line"><span class="line-num">2</span><span class="line-content">    left, right = <span class="number">0</span>, len(arr) - <span class="number">1</span></div>
+            <div class="code-line"><span class="line-num">3</span><span class="line-content">    </div>
+            <div class="code-line"><span class="line-num">4</span><span class="line-content">    <span class="keyword">while</span> left <= right:</div>
+            <div class="code-line"><span class="line-num">5</span><span class="line-content">        mid = (left + right) // <span class="number">2</span></div>
+            <div class="code-line"><span class="line-num">6</span><span class="line-content">        </div>
+            <div class="code-line"><span class="line-num">7</span><span class="line-content">        <span class="keyword">if</span> arr[mid] == target:</div>
+            <div class="code-line"><span class="line-num">8</span><span class="line-content">            <span class="keyword">return</span> mid  <span class="comment"># 找到了！</span></div>
+            <div class="code-line"><span class="line-num">9</span><span class="line-content">        <span class="keyword">elif</span> arr[mid] < target:</div>
+            <div class="code-line"><span class="line-num">10</span><span class="line-content">            left = mid + <span class="number">1</span>   <span class="comment"># 搜索右半部分</span></div>
+            <div class="code-line"><span class="line-num">11</span><span class="line-content">        <span class="keyword">else</span>:</div>
+            <div class="code-line"><span class="line-num">12</span><span class="line-content">            right = mid - <span class="number">1</span>  <span class="comment"># 搜索左半部分</span></div>
+            <div class="code-line"><span class="line-num">13</span><span class="line-content">    </div>
+            <div class="code-line"><span class="line-num">14</span><span class="line-content">    <span class="keyword">return</span> -<span class="number">1</span>  <span class="comment"># 没找到</span></div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-title">
+            <span class="info-icon">📈</span>
+            算法可视化
+          </div>
+          <div class="algorithm-flow">
+            <div class="flow-step step-1">
+              <div class="step-num">Step 1</div>
+              <div class="step-title">定位中点</div>
+              <div class="step-desc">计算 mid = (L+R)/2</div>
+            </div>
+            <div class="flow-step step-2">
+              <div class="step-num">Step 2</div>
+              <div class="step-title">比较大小</div>
+              <div class="step-desc">与 target 比较，决定区间</div>
+            </div>
+            <div class="flow-step step-3">
+              <div class="step-num">Step 3</div>
+              <div class="step-title">缩小范围</div>
+              <div class="step-desc">L=mid+1 或 R=mid-1</div>
+            </div>
+          </div>
+          <div style="margin-top: 20px; padding: 16px; background: #181825; border-radius: 12px; text-align: center;">
+            <div style="color: #6C7086; font-size: 14px;">查找 [1,3,5,7,9,11] 中的 7</div>
+            <div style="color: #A6E3A1; font-size: 18px; margin-top: 8px;">→ 只需 3 步！</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 场景 4: 传统机器学习 (60-85s) -->
+    <div class="scene" id="scene-ml">
+      <div class="section-header">
+        <span class="chapter-tag">CHAPTER 02</span>
+        <h2 class="section-title">传统机器学习：从数据中找规律</h2>
+        <p class="section-subtitle">scikit-learn 快速入门</p>
+      </div>
+      <div class="ml-comparison">
+        <div class="ml-card">
+          <div class="ml-card-title">
+            线性回归
+            <span class="ml-badge badge-traditional">监督学习</span>
+          </div>
+          <div class="code-panel" style="margin-top: 16px;">
+            <div class="code-header">
+              <span class="code-dot dot-red"></span>
+              <span class="code-dot dot-yellow"></span>
+              <span class="code-dot dot-green"></span>
+              <span class="code-filename">linear_regression.py</span>
+            </div>
+            <div class="code-body">
+              <div class="code-line"><span class="line-num">1</span><span class="line-content"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LinearRegression</div>
+              <div class="code-line"><span class="line-num">2</span><span class="line-content"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div>
+              <div class="code-line"><span class="line-num">3</span><span class="line-content"> </div>
+              <div class="code-line"><span class="line-num">4</span><span class="line-content"><span class="comment"># 准备数据：X是特征，y是标签</span></div>
+              <div class="code-line"><span class="line-num">5</span><span class="line-content">X = np.array([[<span class="number">1</span>], [<span class="number">2</span>], [<span class="number">3</span>], [<span class="number">4</span>]])</div>
+              <div class="code-line"><span class="line-num">6</span><span class="line-content">y = np.array([<span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>, <span class="number">8</span>])</div>
+              <div class="code-line"><span class="line-num">7</span><span class="line-content"> </div>
+              <div class="code-line"><span class="line-num">8</span><span class="line-content"><span class="comment"># 训练模型</span></div>
+              <div class="code-line"><span class="line-num">9</span><span class="line-content">model = LinearRegression()</div>
+              <div class="code-line"><span class="line-num">10</span><span class="line-content">model.fit(X, y)</div>
+              <div class="code-line"><span class="line-num">11</span><span class="line-content"> </div>
+              <div class="code-line"><span class="line-num">12</span><span class="line-content"><span class="comment"># 预测新数据</span></div>
+              <div class="code-line"><span class="line-num">13</span><span class="line-content">pred = model.predict([[<span class="number">5</span>]])  <span class="comment"># → [10]</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="ml-card">
+          <div class="ml-card-title">
+            KNN 分类器
+            <span class="ml-badge badge-traditional">监督学习</span>
+          </div>
+          <div class="code-panel" style="margin-top: 16px;">
+            <div class="code-header">
+              <span class="code-dot dot-red"></span>
+              <span class="code-dot dot-yellow"></span>
+              <span class="code-dot dot-green"></span>
+              <span class="code-filename">knn_classifier.py</span>
+            </div>
+            <div class="code-body">
+              <div class="code-line"><span class="line-num">1</span><span class="line-content"><span class="keyword">from</span> sklearn.neighbors <span class="keyword">import</span> KNeighborsClassifier</div>
+              <div class="code-line"><span class="line-num">2</span><span class="line-content"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_iris</div>
+              <div class="code-line"><span class="line-num">3</span><span class="line-content"> </div>
+              <div class="code-line"><span class="line-num">4</span><span class="line-content"><span class="comment"># 加载鸢尾花数据集</span></div>
+              <div class="code-line"><span class="line-num">5</span><span class="line-content">iris = load_iris()</div>
+              <div class="code-line"><span class="line-num">6</span><span class="line-content">X, y = iris.data, iris.target</div>
+              <div class="code-line"><span class="line-num">7</span><span class="line-content"> </div>
+              <div class="code-line"><span class="line-num">8</span><span class="line-content"><span class="comment"># K=5 的最近邻分类</span></div>
+              <div class="code-line"><span class="line-num">9</span><span class="line-content">knn = KNeighborsClassifier(n_neighbors=<span class="number">5</span>)</div>
+              <div class="code-line"><span class="line-num">10</span><span class="line-content">knn.fit(X, y)</div>
+              <div class="code-line"><span class="line-num">11</span><span class="line-content"> </div>
+              <div class="code-line"><span class="line-num">12</span><span class="line-content"><span class="comment"># 预测新样本类别</span></div>
+              <div class="code-line"><span class="line-num">13</span><span class="line-content">pred = knn.predict([[<span class="number">5.1</span>,<span class="number">3.5</span>,<span class="number">1.4</span>,<span class="number">0.2</span>]])</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 场景 5: 深度学习 (85-110s) -->
+    <div class="scene" id="scene-dl">
+      <div class="section-header">
+        <span class="chapter-tag">CHAPTER 03</span>
+        <h2 class="section-title">深度学习：神经网络的崛起</h2>
+        <p class="section-subtitle">用 PyTorch 构建你的第一个神经网络</p>
+      </div>
+      <div class="content-grid">
+        <div class="code-panel">
+          <div class="code-header">
+            <span class="code-dot dot-red"></span>
+            <span class="code-dot dot-yellow"></span>
+            <span class="code-dot dot-green"></span>
+            <span class="code-filename">neural_network.py</span>
+          </div>
+          <div class="code-body">
+            <div class="code-line"><span class="line-num">1</span><span class="line-content"><span class="keyword">import</span> torch</div>
+            <div class="code-line"><span class="line-num">2</span><span class="line-content"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</div>
+            <div class="code-line"><span class="line-num">3</span><span class="line-content"> </div>
+            <div class="code-line"><span class="line-num">4</span><span class="line-content"><span class="keyword">class</span> <span class="function">SimpleNet</span>(nn.Module):</div>
+            <div class="code-line"><span class="line-num">5</span><span class="line-content">    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="variable">self</span>):</div>
+            <div class="code-line"><span class="line-num">6</span><span class="line-content">        <span class="variable">super</span>().__init__()</div>
+            <div class="code-line"><span class="line-num">7</span><span class="line-content">        <span class="variable">self</span>.layers = nn.Sequential(</div>
+            <div class="code-line"><span class="line-num">8</span><span class="line-content">            nn.Linear(<span class="number">784</span>, <span class="number">256</span>),  <span class="comment"># 输入层</span></div>
+            <div class="code-line"><span class="line-num">9</span><span class="line-content">            nn.ReLU(),              <span class="comment"># 激活函数</span></div>
+            <div class="code-line"><span class="line-num">10</span><span class="line-content">            nn.Linear(<span class="number">256</span>, <span class="number">64</span>),   <span class="comment"># 隐藏层</span></div>
+            <div class="code-line"><span class="line-num">11</span><span class="line-content">            nn.ReLU(),</div>
+            <div class="code-line"><span class="line-num">12</span><span class="line-content">            nn.Linear(<span class="number">64</span>, <span class="number">10</span>)    <span class="comment"># 输出层</span></div>
+            <div class="code-line"><span class="line-num">13</span><span class="line-content">        )</div>
+            <div class="code-line"><span class="line-num">14</span><span class="line-content">    </div>
+            <div class="code-line"><span class="line-num">15</span><span class="line-content">    <span class="keyword">def</span> <span class="function">forward</span>(<span class="variable">self</span>, x):</div>
+            <div class="code-line"><span class="line-num">16</span><span class="line-content">        <span class="keyword">return</span> <span class="variable">self</span>.layers(x)</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-title">
+            <span class="info-icon">🧠</span>
+            神经网络核心概念
+          </div>
+          <ul class="info-list">
+            <li><strong>Linear 层</strong>：y = Wx + b，矩阵运算</li>
+            <li><strong>ReLU</strong>：max(0, x)，添加非线性</li>
+            <li><strong>损失函数</strong>：衡量预测与真实差距</li>
+            <li><strong>反向传播</strong>：计算梯度，更新参数</li>
+            <li><strong>优化器</strong>：Adam、SGD 等</li>
+          </div>
+          <div style="margin-top: 20px; padding: 16px; background: #181825; border-radius: 12px;">
+            <div style="color: #F9E2AF; font-size: 16px; font-weight: 600;">Mnist 手写数字识别</div>
+            <div style="color: #6C7086; font-size: 14px; margin-top: 8px;">输入 28×28=784 像素 → 隐藏层 256 → 输出 10 类</div>
+            <div style="color: #A6E3A1; font-size: 14px; margin-top: 8px;">准确率可达 98%+</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 场景 6: CNN 图像识别 (110-130s) -->
+    <div class="scene" id="scene-cnn">
+      <div class="section-header">
+        <span class="chapter-tag">CHAPTER 03</span>
+        <h2 class="section-title">CNN：让机器"看懂"图像</h2>
+        <p class="section-subtitle">卷积神经网络处理图片的核心思想</p>
+      </div>
+      <div class="content-grid">
+        <div class="code-panel">
+          <div class="code-header">
+            <span class="code-dot dot-red"></span>
+            <span class="code-dot dot-yellow"></span>
+            <span class="code-dot dot-green"></span>
+            <span class="code-filename">cnn_classifier.py</span>
+          </div>
+          <div class="code-body">
+            <div class="code-line"><span class="line-num">1</span><span class="line-content"><span class="keyword">class</span> <span class="function">CNN</span>(nn.Module):</div>
+            <div class="code-line"><span class="line-num">2</span><span class="line-content">    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="variable">self</span>):</div>
+            <div class="code-line"><span class="line-num">3</span><span class="line-content">        <span class="variable">super</span>().__init__()</div>
+            <div class="code-line"><span class="line-num">4</span><span class="line-content">        <span class="variable">self</span>.conv = nn.Sequential(</div>
+            <div class="code-line"><span class="line-num">5</span><span class="line-content">            <span class="comment"># Conv2d(输入通道, 输出通道, 卷积核大小)</span></div>
+            <div class="code-line"><span class="line-num">6</span><span class="line-content">            nn.Conv2d(<span class="number">3</span>, <span class="number">32</span>, <span class="number">3</span>, padding=<span class="number">1</span>),</div>
+            <div class="code-line"><span class="line-num">7</span><span class="line-content">            nn.ReLU(),</div>
+            <div class="code-line"><span class="line-num">8</span><span class="line-content">            nn.MaxPool2d(<span class="number">2</span>),  <span class="comment"># 池化缩小图片</span></div>
+            <div class="code-line"><span class="line-num">9</span><span class="line-content">            nn.Conv2d(<span class="number">32</span>, <span class="number">64</span>, <span class="number">3</span>),</div>
+            <div class="code-line"><span class="line-num">10</span><span class="line-content">            nn.ReLU(),</div>
+            <div class="code-line"><span class="line-num">11</span><span class="line-content">            nn.MaxPool2d(<span class="number">2</span>),</div>
+            <div class="code-line"><span class="line-num">12</span><span class="line-content">        )</div>
+            <div class="code-line"><span class="line-num">13</span><span class="line-content">        <span class="variable">self</span>.fc = nn.Linear(<span class="number">64</span>*<span class="number">6</span>*<span class="number">6</span>, <span class="number">10</span>)</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-title">
+            <span class="info-icon">👁️</span>
+            CNN 三板斧
+          </div>
+          <ul class="info-list">
+            <li><strong>卷积 (Conv)</strong>：提取图像特征</li>
+            <li><strong>池化 (Pool)</strong>：缩小尺寸，保留关键</li>
+            <li><strong>全连接 (FC)</strong>：综合特征做分类</li>
+          </ul>
+          <div style="margin-top: 20px; padding: 16px; background: #181825; border-radius: 12px;">
+            <div style="color: #89B4FA; font-size: 14px;">图像处理流程</div>
+            <div style="display: flex; justify-content: space-between; margin-top: 12px; align-items: center;">
+              <div style="text-align: center;">
+                <div style="color: #CDD6F4;">原图</div>
+                <div style="color: #6C7086; font-size: 12px;">32×32×3</div>
+              </div>
+              <div style="color: #6C7086;">→</div>
+              <div style="text-align: center;">
+                <div style="color: #CDD6F4;">卷积+池化</div>
+                <div style="color: #6C7086; font-size: 12px;">16×16×32</div>
+              </div>
+              <div style="color: #6C7086;">→</div>
+              <div style="text-align: center;">
+                <div style="color: #CDD6F4;">卷积+池化</div>
+                <div style="color: #6C7086; font-size: 12px;">6×6×64</div>
+              </div>
+              <div style="color: #6C7086;">→</div>
+              <div style="text-align: center;">
+                <div style="color: #A6E3A1;">分类</div>
+                <div style="color: #6C7086; font-size: 12px;">10类</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 场景 7: AI Agent (130-145s) -->
+    <div class="scene" id="scene-agent">
+      <div class="section-header">
+        <span class="chapter-tag">CHAPTER 04</span>
+        <h2 class="section-title">AI Agent：让大模型"行动"</h2>
+        <p class="section-subtitle">LangChain 快速构建你的第一个 Agent</p>
+      </div>
+      <div class="content-grid">
+        <div class="code-panel">
+          <div class="code-header">
+            <span class="code-dot dot-red"></span>
+            <span class="code-dot dot-yellow"></span>
+            <span class="code-dot dot-green"></span>
+            <span class="code-filename">simple_agent.py</span>
+          </div>
+          <div class="code-body">
+            <div class="code-line"><span class="line-num">1</span><span class="line-content"><span class="keyword">from</span> langchain <span class="keyword">import</span> OpenAI, SerpAPIWrapper</div>
+            <div class="code-line"><span class="line-num">2</span><span class="line-content"><span class="keyword">from</span> langchain.agents <span class="keyword">import</span> initialize_agent, Tool</div>
+            <div class="code-line"><span class="line-num">3</span><span class="line-content"> </div>
+            <div class="code-line"><span class="line-num">4</span><span class="line-content"><span class="comment"># 1. 定义工具</span></div>
+            <div class="code-line"><span class="line-num">5</span><span class="line-content">search = SerpAPIWrapper()</div>
+            <div class="code-line"><span class="line-num">6</span><span class="line-content">tools = [</div>
+            <div class="code-line"><span class="line-num">7</span><span class="line-content">    Tool(name=<span class="string">"搜索"</span>,</div>
+            <div class="code-line"><span class="line-num">8</span><span class="line-content">         func=search.run,</div>
+            <div class="code-line"><span class="line-num">9</span><span class="line-content">         description=<span class="string">"搜索互联网获取信息"</span>)</div>
+            <div class="code-line"><span class="line-num">10</span><span class="line-content">]</div>
+            <div class="code-line"><span class="line-num">11</span><span class="line-content"> </div>
+            <div class="code-line"><span class="line-num">12</span><span class="line-content"><span class="comment"># 2. 创建 Agent</span></div>
+            <div class="code-line"><span class="line-num">13</span><span class="line-content">llm = OpenAI(temperature=<span class="number">0</span>)</div>
+            <div class="code-line"><span class="line-num">14</span><span class="line-content">agent = initialize_agent(</div>
+            <div class="code-line"><span class="line-num">15</span><span class="line-content">    tools, llm, agent=<span class="string">"zero-shot"</span>)</div>
+            <div class="code-line"><span class="line-num">16</span><span class="line-content"> </div>
+            <div class="code-line"><span class="line-num">17</span><span class="line-content"><span class="comment"># 3. 运行！</span></div>
+            <div class="code-line"><span class="line-num">18</span><span class="line-content">result = agent.run(<span class="string">"今天杭州天气怎样？"</span>)</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-title">
+            <span class="info-icon">🤖</span>
+            Agent 核心组件
+          </div>
+          <ul class="info-list">
+            <li><strong>LLM</strong>：大脑，理解指令、规划行动</li>
+            <li><strong>Tools</strong>：工具，搜索、计算、代码执行</li>
+            <li><strong>Agent</strong>：决策器，决定使用哪个工具</li>
+            <li><strong>Memory</strong>：记忆，保存对话历史</li>
+          </ul>
+          <div style="margin-top: 20px; padding: 16px; background: #181825; border-radius: 12px;">
+            <div style="color: #F9E2AF; font-size: 16px; font-weight: 600;">Agent 工作流程</div>
+            <div style="color: #6C7086; font-size: 14px; margin-top: 8px; line-height: 1.8;">
+              用户指令 → LLM 理解 → 规划行动 → 调用工具 → 获取结果 → 反馈用户
+            </div>
+            <div style="color: #A6E3A1; font-size: 14px; margin-top: 12px;">
+              ✅ 自主规划<br>
+              ✅ 调用工具<br>
+              ✅ 多轮对话
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 场景 8: 总结 (145-150s) -->
+    <div class="scene" id="scene-summary">
+      <div class="section-header">
+        <span class="chapter-tag">SUMMARY</span>
+        <h2 class="section-title">你的 AI 学习路线图</h2>
+        <p class="section-subtitle">从入门到实战，持续进阶</p>
+      </div>
+      <div class="summary-grid">
+        <div class="summary-card algorithm">
+          <div class="summary-icon">⚡</div>
+          <div class="summary-name">算法基础</div>
+          <div class="summary-skills">
+            排序算法<br>
+            查找算法<br>
+            递归与分治<br>
+            时间复杂度
+          </div>
+        </div>
+        <div class="summary-card ml">
+          <div class="summary-icon">📊</div>
+          <div class="summary-name">传统 ML</div>
+          <div class="summary-skills">
+            线性回归<br>
+            决策树<br>
+            SVM<br>
+            scikit-learn
+          </div>
+        </div>
+        <div class="summary-card dl">
+          <div class="summary-icon">🧠</div>
+          <div class="summary-name">深度学习</div>
+          <div class="summary-skills">
+            CNN / RNN<br>
+            Transformer<br>
+            PyTorch<br>
+            模型训练
+          </div>
+        </div>
+        <div class="summary-card agent">
+          <div class="summary-icon">🤖</div>
+          <div class="summary-name">AI Agent</div>
+          <div class="summary-skills">
+            LangChain<br>
+            工具调用<br>
+            RAG<br>
+            自主规划
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    window.__timelines = window.__timelines || {};
+    
+    const tl = gsap.timeline({ paused: true });
+    
+    // 场景 1: 开场 (0-12s)
+    tl.from(".main-title", { y: 60, opacity: 0, duration: 0.8, ease: "power3.out" }, 0.3)
+      .from(".intro-sub", { y: 30, opacity: 0, duration: 0.6, ease: "power2.out" }, 0.8)
+      .from(".roadmap-item", { y: 40, opacity: 0, scale: 0.9, duration: 0.5, stagger: 0.12, ease: "back.out(1.2)" }, 1.5)
+      .to("#scene-intro", { opacity: 0, duration: 0.5 }, 11.5);
+    
+    // 场景 2: 算法基础 (12-40s)
+    tl.set("#scene-algorithm", { opacity: 1 }, 12)
+      .from("#scene-algorithm .chapter-tag", { y: 20, opacity: 0, duration: 0.4 }, 12.2)
+      .from("#scene-algorithm .section-title", { y: 30, opacity: 0, duration: 0.5 }, 12.4)
+      .from("#scene-algorithm .code-panel", { x: -50, opacity: 0, duration: 0.6, ease: "power3.out" }, 13)
+      .from("#scene-algorithm .info-card", { x: 50, opacity: 0, duration: 0.6, ease: "power3.out" }, 13.3)
+      .from(".code-line", { opacity: 0, y: 10, duration: 0.15, stagger: 0.05 }, 14)
+      .from(".info-list li", { x: -20, opacity: 0, duration: 0.3, stagger: 0.1 }, 18)
+      .to("#scene-algorithm", { opacity: 0, duration: 0.5 }, 39.5);
+    
+    // 场景 3: 二分查找 (40-60s)
+    tl.set("#scene-binary", { opacity: 1 }, 40)
+      .from("#scene-binary .chapter-tag", { y: 20, opacity: 0, duration: 0.4 }, 40.2)
+      .from("#scene-binary .section-title", { y: 30, opacity: 0, duration: 0.5 }, 40.4)
+      .from("#scene-binary .code-panel", { x: -50, opacity: 0, duration: 0.6 }, 41)
+      .from("#scene-binary .info-card", { x: 50, opacity: 0, duration: 0.6 }, 41.3)
+      .from(".flow-step", { y: 30, opacity: 0, duration: 0.4, stagger: 0.15, ease: "back.out(1.2)" }, 44)
+      .to("#scene-binary", { opacity: 0, duration: 0.5 }, 59.5);
+    
+    // 场景 4: 传统机器学习 (60-85s)
+    tl.set("#scene-ml", { opacity: 1 }, 60)
+      .from("#scene-ml .chapter-tag", { y: 20, opacity: 0, duration: 0.4 }, 60.2)
+      .from("#scene-ml .section-title", { y: 30, opacity: 0, duration: 0.5 }, 60.4)
+      .from(".ml-card", { y: 40, opacity: 0, duration: 0.5, stagger: 0.2 }, 61)
+      .to("#scene-ml", { opacity: 0, duration: 0.5 }, 84.5);
+    
+    // 场景 5: 深度学习 (85-110s)
+    tl.set("#scene-dl", { opacity: 1 }, 85)
+      .from("#scene-dl .chapter-tag", { y: 20, opacity: 0, duration: 0.4 }, 85.2)
+      .from("#scene-dl .section-title", { y: 30, opacity: 0, duration: 0.5 }, 85.4)
+      .from("#scene-dl .code-panel", { x: -50, opacity: 0, duration: 0.6 }, 86)
+      .from("#scene-dl .info-card", { x: 50, opacity: 0, duration: 0.6 }, 86.3)
+      .to("#scene-dl", { opacity: 0, duration: 0.5 }, 109.5);
+    
+    // 场景 6: CNN (110-130s)
+    tl.set("#scene-cnn", { opacity: 1 }, 110)
+      .from("#scene-cnn .chapter-tag", { y: 20, opacity: 0, duration: 0.4 }, 110.2)
+      .from("#scene-cnn .section-title", { y: 30, opacity: 0, duration: 0.5 }, 110.4)
+      .from("#scene-cnn .code-panel", { x: -50, opacity: 0, duration: 0.6 }, 111)
+      .from("#scene-cnn .info-card", { x: 50, opacity: 0, duration: 0.6 }, 111.3)
+      .to("#scene-cnn", { opacity: 0, duration: 0.5 }, 129.5);
+    
+    // 场景 7: AI Agent (130-145s)
+    tl.set("#scene-agent", { opacity: 1 }, 130)
+      .from("#scene-agent .chapter-tag", { y: 20, opacity: 0, duration: 0.4 }, 130.2)
+      .from("#scene-agent .section-title", { y: 30, opacity: 0, duration: 0.5 }, 130.4)
+      .from("#scene-agent .code-panel", { x: -50, opacity: 0, duration: 0.6 }, 131)
+      .from("#scene-agent .info-card", { x: 50, opacity: 0, duration: 0.6 }, 131.3)
+      .to("#scene-agent", { opacity: 0, duration: 0.5 }, 144.5);
+    
+    // 场景 8: 总结 (145-150s)
+    tl.set("#scene-summary", { opacity: 1 }, 145)
+      .from("#scene-summary .chapter-tag", { y: 20, opacity: 0, duration: 0.4 }, 145.2)
+      .from("#scene-summary .section-title", { y: 30, opacity: 0, duration: 0.5 }, 145.4)
+      .from(".summary-card", { y: 40, opacity: 0, scale: 0.9, duration: 0.5, stagger: 0.15, ease: "back.out(1.2)" }, 146);
+    
+    window.__timelines["main"] = tl;
+    
+    // 浏览器预览播放器
+    if (!window.__hyperframes) {
+      const controls = document.createElement('div');
+      controls.className = 'player-controls';
+      
+      const playBtn = document.createElement('button');
+      playBtn.className = 'play-btn';
+      playBtn.textContent = '▶ 播放';
+      
+      const scenes = [
+        { name: '开场', time: 0 },
+        { name: '算法', time: 12 },
+        { name: '二分', time: 40 },
+        { name: 'ML', time: 60 },
+        { name: 'DL', time: 85 },
+        { name: 'CNN', time: 110 },
+        { name: 'Agent', time: 130 },
+        { name: '总结', time: 145 }
+      ];
+      
+      let isPlaying = false;
+      playBtn.onclick = () => {
+        if (isPlaying) {
+          tl.pause();
+          playBtn.textContent = '▶ 播放';
+        } else {
+          tl.play();
+          playBtn.textContent = '⏸ 暂停';
+        }
+        isPlaying = !isPlaying;
+      };
+      
+      controls.appendChild(playBtn);
+      
+      scenes.forEach((scene, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'scene-btn';
+        btn.textContent = `${i + 1}. ${scene.name}`;
+        btn.onclick = () => {
+          tl.pause();
+          tl.time(scene.time);
+          playBtn.textContent = '▶ 播放';
+          isPlaying = false;
+        };
+        controls.appendChild(btn);
+      });
+      
+      document.body.appendChild(controls);
+      
+      const tip = document.createElement('div');
+      tip.className = 'player-tip';
+      tip.textContent = '💡 点击「播放」查看完整教程，或点击章节按钮跳转';
+      document.body.appendChild(tip);
+      
+      setTimeout(() => {
+        tip.style.opacity = '0';
+        tip.style.transition = 'opacity 0.5s';
+      }, 6000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "html2video",
+  "version": "1.0.0",
+  "description": "基于 HyperFrames + GSAP 的 AI 教学视频自动化制作平台",
+  "main": "index.js",
+  "scripts": {
+    "preview": "npx hyperframes preview",
+    "preview-llm": "cd llm-transformer-tutorial && npx hyperframes preview",
+    "preview-math": "cd ai-math-foundations && npx hyperframes preview",
+    "render-draft": "npx hyperframes render --quality draft",
+    "render-standard": "npx hyperframes render --fps 30 --quality standard",
+    "render-high": "npx hyperframes render --fps 60 --quality high"
+  },
+  "keywords": [
+    "hyperframes",
+    "gsap",
+    "video",
+    "ai",
+    "tutorial",
+    "llm"
+  ],
+  "author": "Fengzhou Wang",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
+}

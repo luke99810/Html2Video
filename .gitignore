@@ -1,0 +1,32 @@
+# Node
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build
+dist/
+build/
+*.mp4
+*.webm
+*.wav
+*.mp3
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# HyperFrames temp
+.cache/
+temp/
+hyperframes*.log
+
+# WorkBuddy
+.workbuddy/

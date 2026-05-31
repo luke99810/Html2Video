@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>
+body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#0a0a0a;font-family:"DM Sans",sans-serif}
+.scene{position:absolute;top:0;left:0;width:1920px;height:1080px;overflow:hidden}
+
+/* === Scene z-index === */
+#scene1{z-index:1;background:#0a0a0a}
+#scene2{z-index:2;background:#0a0a0a;opacity:0}
+#scene3{z-index:3;background:#0a0a0a;opacity:0}
+#scene4{z-index:4;background:#0a0a0a;opacity:0}
+#scene5{z-index:5;background:#0a0a0a;opacity:0}
+#scene6{z-index:6;background:#0a0a0a;opacity:0}
+#scene7{z-index:7;background:#0a0a0a;opacity:0}
+#scene8{z-index:8;background:#0a0a0a;opacity:0}
+#scene9{z-index:9;background:#0a0a0a;opacity:0}
+
+/* === Typography === */
+.headline{font-family:"DM Sans",sans-serif;font-weight:800;letter-spacing:-0.03em;line-height:1.1;color:#e8e8e8}
+.body{font-family:"IBM Plex Mono",monospace;font-weight:300;color:#a0a0a0;line-height:1.6;font-size:22px}
+.accent-purple{color:#7c3aed}
+.accent-cyan{color:#06b6d4}
+.muted{color:#3a3a3a}
+
+/* === Decorative === */
+.glow{position:absolute;border-radius:50%;filter:blur(120px);pointer-events:none}
+.ghost-text{position:absolute;font-family:"DM Sans",sans-serif;font-weight:900;font-size:200px;color:#7c3aed;opacity:0.04;pointer-events:none;user-select:none}
+.ghost-text-cyan{color:#06b6d4}
+.hairline{position:absolute;height:1px;background:#7c3aed;opacity:0.2;pointer-events:none}
+.hairline-cyan{background:#06b6d4}
+.dot-grid{position:absolute;top:0;left:0;width:1920px;height:1080px;opacity:0.03;
+  background-image:radial-gradient(#e8e8e8 1px,rgba(10,10,10,0) 1px);background-size:48px 48px;pointer-events:none}
+
+/* === Grid Dissolve overlay === */
+.grid-cell{position:absolute;pointer-events:none}
+
+/* === Layout helpers === */
+.scene-content{display:flex;flex-direction:column;width:1920px;height:1080px;box-sizing:border-box;padding:100px 140px}
+.left-panel{display:flex;flex-direction:column;justify-content:center;width:760px;height:1080px;padding:100px 60px 100px 140px;box-sizing:border-box}
+.right-panel{display:flex;flex-direction:column;justify-content:center;flex:1;height:1080px;padding:100px 140px 100px 60px;box-sizing:border-box}
+
+/* === Cards === */
+.card{background:rgba(255,255,255,0.04);border:1px solid rgba(124,58,237,0.15);border-radius:12px;padding:28px 32px}
+.card-cyan{border-color:rgba(6,182,212,0.15)}
+.card-accent{border-color:rgba(124,58,237,0.4);background:rgba(124,58,237,0.06)}
+
+/* === Tag === */
+.tag{display:inline-block;padding:6px 16px;border-radius:6px;font-family:"IBM Plex Mono",monospace;font-size:16px;font-weight:400}
+.tag-purple{background:rgba(124,58,237,0.15);color:#7c3aed}
+.tag-cyan{background:rgba(6,182,212,0.15);color:#06b6d4}
+</style>
+</head>
+<body>
+
+<div id="root" data-composition-id="main" data-width="1920" data-height="1080" data-start="0" data-duration="75">
+
+<!-- ==================== SCENE 1: TITLE ==================== -->
+<div id="scene1" class="scene">
+  <div class="dot-grid"></div>
+  <div class="glow" style="width:600px;height:600px;background:#7c3aed;top:-100px;left:200px;opacity:0.12" id="s1-glow1"></div>
+  <div class="glow" style="width:500px;height:500px;background:#06b6d4;bottom:-150px;right:100px;opacity:0.08" id="s1-glow2"></div>
+  <div class="ghost-text" style="top:80px;right:-100px" id="s1-ghost1">ML</div>
+  <div class="ghost-text ghost-text-cyan" style="bottom:-40px;left:-80px;font-size:160px" id="s1-ghost2">AI</div>
+  <div class="hairline" style="top:920px;left:140px;width:300px" id="s1-line1"></div>
+
+  <div class="scene-content" style="justify-content:center;align-items:flex-start">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px" id="s1-tags">
+      <span class="tag tag-purple">7 Frameworks</span>
+      <span class="tag tag-cyan">From Zero to Deploy</span>
+    </div>
+    <h1 class="headline" style="font-size:110px;margin:0 0 24px 0" id="s1-title">
+      机器学习<br/><span class="accent-purple">主流框架</span>指南
+    </h1>
+    <p class="body" style="font-size:24px;max-width:800px;margin:0" id="s1-sub">
+      从 NumPy 到 Hugging Face，系统掌握 ML 框架的核心概念、架构设计与实战用法
+    </p>
+  </div>
+</div>
+
+<!-- ==================== SCENE 2: OVERVIEW MAP ==================== -->
+<div id="scene2" class="scene">
+  <div class="dot-grid"></div>
+  <div class="glow" style="width:500px;height:500px;background:#7c3aed;top:100px;right:-100px;opacity:0.1" id="s2-glow1"></div>
+  <div class="hairline" style="top:80px;left:140px;width:200px" id="s2-line1"></div>
+
+  <div class="scene-content">
+    <p class="body" style="font-size:18px;margin:0 0 12px 0;letter-spacing:0.1em;text-transform:uppercase;color:#7c3aed" id="s2-sec">Section 01</p>
+    <h2 class="headline" style="font-size:72px;margin:0 0 48px 0" id="s2-title">全景地图</h2>
+
+    <div style="display:flex;gap:32px;flex:1;align-items:stretch">
+      <!-- Left: Category Tree -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:20px" id="s2-tree">
+        <div class="card card-accent">
+          <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:28px;color:#7c3aed;margin:0 0 8px 0">机器学习</p>
+          <p class="body" style="font-size:18px;margin:0">数据驱动的智能决策</p>
+        </div>
+        <div style="display:flex;gap:20px">
+          <div class="card" style="flex:1">
+            <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:24px;color:#e8e8e8;margin:0 0 6px 0">传统 ML</p>
+            <p class="body" style="font-size:17px;margin:0">Scikit-learn<br/>XGBoost / LightGBM</p>
+          </div>
+          <div class="card card-cyan" style="flex:1">
+            <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:24px;color:#06b6d4;margin:0 0 6px 0">深度学习</p>
+            <p class="body" style="font-size:17px;margin:0">PyTorch / TensorFlow<br/>Keras / Hugging Face</p>
+          </div>
+        </div>
+        <div class="card" style="background:rgba(6,182,212,0.06);border-color:rgba(6,182,212,0.2)">
+          <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:24px;color:#06b6d4;margin:0 0 6px 0">强化学习</p>
+          <p class="body" style="font-size:17px;margin:0">Q-Learning / PPO / SAC</p>
+        </div>
+      </div>
+
+      <!-- Right: Task Matrix -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:16px" id="s2-matrix">
+        <p style="font-family:'DM Sans',sans-serif;font-weight:600;font-size:20px;color:#e8e8e8;margin:0 0 4px 0" id="s2-matrix-title">任务 → 框架速查</p>
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+          <span class="body" style="font-size:18px;margin:0">表格数据</span>
+          <span class="tag tag-purple">XGBoost</span>
+        </div>
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+          <span class="body" style="font-size:18px;margin:0">图像任务</span>
+          <span class="tag tag-cyan">PyTorch</span>
+        </div>
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+          <span class="body" style="font-size:18px;margin:0">NLP 文本</span>
+          <span class="tag tag-cyan">Hugging Face</span>
+        </div>
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+          <span class="body" style="font-size:18px;margin:0">快速原型</span>
+          <span class="tag tag-purple">Keras</span>
+        </div>
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+          <span class="body" style="font-size:18px;margin:0">特征工程</span>
+          <span class="tag tag-purple">Scikit-learn</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCENE 3: NUMPY ==================== -->
+<div id="scene3" class="scene">
+  <div class="dot-grid"></div>
+  <div class="glow" style="width:500px;height:500px;background:#06b6d4;top:-80px;left:600px;opacity:0.1" id="s3-glow1"></div>
+  <div class="ghost-text" style="top:60px;left:160px;font-size:260px;opacity:0.03" id="s3-ghost">np</div>
+  <div class="hairline hairline-cyan" style="top:80px;left:140px;width:200px" id="s3-line1"></div>
+
+  <div class="scene-content" style="flex-direction:row;gap:0">
+    <div class="left-panel">
+      <p class="body" style="font-size:18px;letter-spacing:0.1em;text-transform:uppercase;color:#06b6d4;margin:0 0 12px 0" id="s3-sec">基石</p>
+      <h2 class="headline" style="font-size:80px;margin:0 0 16px 0" id="s3-title">NumPy<br/><span style="font-size:52px;color:#3a3a3a">& SciPy</span></h2>
+      <p class="body" style="font-size:20px;margin:0 0 36px 0;max-width:600px" id="s3-desc">
+        所有 ML 框架的底层基石。理解 ndarray 和广播机制，是理解后续一切的前提。
+      </p>
+      <div style="display:flex;gap:16px;flex-wrap:wrap" id="s3-features">
+        <span class="tag tag-cyan">ndarray</span>
+        <span class="tag tag-cyan">Broadcasting</span>
+        <span class="tag tag-cyan">向量化运算</span>
+        <span class="tag tag-purple">矩阵点积</span>
+      </div>
+    </div>
+
+    <div class="right-panel" style="gap:24px">
+      <div class="card card-cyan" id="s3-code1">
+        <p style="font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:19px;color:#e8e8e8;margin:0;line-height:1.8;white-space:pre"><span style="color:#06b6d4">import</span> numpy <span style="color:#06b6d4">as</span> np
+
+a = np.array([<span style="color:#7c3aed">1, 2, 3</span>])
+b = np.random.randn(<span style="color:#7c3aed">3, 4</span>)
+
+<span style="color:#3a3a3a"># 广播 — 核心特性</span>
+c = a + np.array([<span style="color:#7c3aed">10, 20, 30</span>])
+<span style="color:#3a3a3a"># (3,1) + (3,) → (3,3)</span></p>
+      </div>
+      <div class="card" id="s3-code2">
+        <p style="font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:19px;color:#e8e8e8;margin:0;line-height:1.8;white-space:pre"><span style="color:#3a3a3a"># 矩阵乘法 = 全连接层</span>
+W = np.random.randn(<span style="color:#7c3aed">3, 4</span>)
+x = np.random.randn(<span style="color:#7c3aed">4</span>)
+y = W <span style="color:#06b6d4">@</span> x
+<span style="color:#3a3a3a"># (3,4) × (4,) → (3,)</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCENE 4: SCIKIT-LEARN ==================== -->
+<div id="scene4" class="scene">
+  <div class="dot-grid"></div>
+  <div class="glow" style="width:600px;height:600px;background:#7c3aed;bottom:-150px;left:-100px;opacity:0.1" id="s4-glow1"></div>
+  <div class="ghost-text" style="bottom:20px;right:120px;font-size:220px;opacity:0.03" id="s4-ghost">sklearn</div>
+  <div class="hairline" style="top:80px;left:140px;width:200px" id="s4-line1"></div>
+
+  <div class="scene-content" style="flex-direction:row;gap:0">
+    <div class="left-panel">
+      <p class="body" style="font-size:18px;letter-spacing:0.1em;text-transform:uppercase;color:#7c3aed;margin:0 0 12px 0" id="s4-sec">传统 ML</p>
+      <h2 class="headline" style="font-size:80px;margin:0 0 16px 0" id="s4-title">Scikit-learn</h2>
+      <p class="body" style="font-size:20px;margin:0 0 36px 0;max-width:600px" id="s4-desc">
+        结构化数据的瑞士军刀。统一 Estimator API：实例化 → 训练 → 预测，三步完成一切。
+      </p>
+      <div class="card" id="s4-api">
+        <p style="font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:20px;color:#e8e8e8;margin:0;line-height:2;white-space:pre"><span style="color:#7c3aed">model</span>.<span style="color:#06b6d4">fit</span>(X_train, y_train)
+<span style="color:#7c3aed">model</span>.<span style="color:#06b6d4">predict</span>(X_test)
+<span style="color:#7c3aed">model</span>.<span style="color:#06b6d4">score</span>(X, y)</p>
+      </div>
+    </div>
+
+    <div class="right-panel" style="gap:20px">
+      <p style="font-family:'DM Sans',sans-serif;font-weight:600;font-size:20px;color:#e8e8e8;margin:0" id="s4-models-title">核心模型</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" id="s4-models">
+        <div class="card">
+          <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:20px;color:#e8e8e8;margin:0 0 4px 0">Logistic</p>
+          <p class="body" style="font-size:16px;margin:0">二分类基线</p>
+        </div>
+        <div class="card">
+          <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:20px;color:#e8e8e8;margin:0 0 4px 0">RandomForest</p>
+          <p class="body" style="font-size:16px;margin:0">通用首选</p>
+        </div>
+        <div class="card">
+          <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:20px;color:#e8e8e8;margin:0 0 4px 0">SVM</p>
+          <p class="body" style="font-size:16px;margin:0">小样本高维</p>
+        </div>
+        <div class="card">
+          <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:20px;color:#e8e8e8;margin:0 0 4px 0">KMeans</p>
+          <p class="body" style="font-size:16px;margin:0">无监督聚类</p>
+        </div>
+      </div>
+      <div class="card card-accent" id="s4-pipeline">
+        <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:20px;color:#7c3aed;margin:0 0 8px 0">Pipeline 流水线</p>
+        <p class="body" style="font-size:17px;margin:0">填充 → 编码 → 标准化 → 模型，端到端一体化</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCENE 5: PYTORCH vs TENSORFLOW ==================== -->
+<div id="scene5" class="scene">
+  <div class="dot-grid"></div>
+  <div class="glow" style="width:500px;height:500px;background:#7c3aed;top:50px;left:-80px;opacity:0.12" id="s5-glow1"></div>
+  <div class="glow" style="width:500px;height:500px;background:#06b6d4;top:50px;right:-80px;opacity:0.08" id="s5-glow2"></div>
+  <div class="hairline" style="top:80px;left:140px;width:200px" id="s5-line1"></div>
+
+  <div class="scene-content">
+    <p class="body" style="font-size:18px;letter-spacing:0.1em;text-transform:uppercase;color:#7c3aed;margin:0 0 12px 0" id="s5-sec">深度学习双雄</p>
+    <h2 class="headline" style="font-size:72px;margin:0 0 48px 0" id="s5-title">PyTorch <span style="color:#3a3a3a">vs</span> TensorFlow</h2>
+
+    <div style="display:flex;gap:40px;flex:1">
+      <!-- PyTorch -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:20px" id="s5-pytorch">
+        <div class="card card-accent" style="text-align:center;padding:20px">
+          <p style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:36px;color:#7c3aed;margin:0">PyTorch</p>
+          <p class="body" style="font-size:16px;margin:4px 0 0 0">研究者首选</p>
+        </div>
+        <div class="card">
+          <p style="font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:17px;color:#e8e8e8;margin:0;line-height:1.8;white-space:pre"><span style="color:#06b6d4">class</span> Net(nn.Module):
+    <span style="color:#06b6d4">def</span> forward(self, x):
+        <span style="color:#06b6d4">return</span> self.net(x)
+
+optimizer.zero_grad()
+loss.backward()
+optimizer.step()</p>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <span class="tag tag-purple">动态图</span>
+          <span class="tag tag-purple">Pythonic</span>
+          <span class="tag tag-purple">80% 论文</span>
+        </div>
+      </div>
+
+      <!-- TensorFlow -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:20px" id="s5-tf">
+        <div class="card card-cyan" style="text-align:center;padding:20px">
+          <p style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:36px;color:#06b6d4;margin:0">TensorFlow</p>
+          <p class="body" style="font-size:16px;margin:4px 0 0 0">工业级部署</p>
+        </div>
+        <div class="card">
+          <p style="font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:17px;color:#e8e8e8;margin:0;line-height:1.8;white-space:pre">model = Sequential([
+    Dense(<span style="color:#7c3aed">128</span>, activation=<span style="color:#06b6d4">'relu'</span>),
+    Dropout(<span style="color:#7c3aed">0.3</span>),
+    Dense(<span style="color:#7c3aed">10</span>, activation=<span style="color:#06b6d4">'softmax'</span>)
+])
+model.fit(X, y, epochs=<span style="color:#7c3aed">20</span>)</p>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <span class="tag tag-cyan">Keras API</span>
+          <span class="tag tag-cyan">TF Serving</span>
+          <span class="tag tag-cyan">多平台</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCENE 6: HUGGING FACE ==================== -->
+<div id="scene6" class="scene">
+  <div class="dot-grid"></div>
+  <div class="glow" style="width:600px;height:600px;background:#7c3aed;top:200px;left:600px;opacity:0.08" id="s6-glow1"></div>
+  <div class="ghost-text ghost-text-cyan" style="top:40px;left:120px;font-size:180px;opacity:0.03" id="s6-ghost">NLP</div>
+  <div class="hairline hairline-cyan" style="top:80px;left:140px;width:200px" id="s6-line1"></div>
+
+  <div class="scene-content" style="flex-direction:row;gap:0">
+    <div class="left-panel">
+      <p class="body" style="font-size:18px;letter-spacing:0.1em;text-transform:uppercase;color:#06b6d4;margin:0 0 12px 0" id="s6-sec">NLP 新范式</p>
+      <h2 class="headline" style="font-size:72px;margin:0 0 16px 0" id="s6-title">Hugging Face<br/><span style="font-size:48px;color:#3a3a3a">Transformers</span></h2>
+      <p class="body" style="font-size:20px;margin:0 0 28px 0;max-width:560px" id="s6-desc">
+        预训练模型的 App Store。一行 Pipeline 搞定情感分析、问答、翻译、NER。
+      </p>
+      <div class="card card-accent" id="s6-ecosystem">
+        <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:18px;color:#7c3aed;margin:0 0 12px 0">生态矩阵</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <span class="tag tag-purple">transformers</span>
+          <span class="tag tag-cyan">datasets</span>
+          <span class="tag tag-purple">tokenizers</span>
+          <span class="tag tag-cyan">peft (LoRA)</span>
+          <span class="tag tag-purple">diffusers</span>
+          <span class="tag tag-cyan">gradio</span>
+          <span class="tag tag-purple">accelerate</span>
+          <span class="tag tag-cyan">safetensors</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-panel" style="gap:20px">
+      <div class="card card-cyan" id="s6-code1">
+        <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:17px;color:#06b6d4;margin:0 0 10px 0">Pipeline — 5 行做 NLP</p>
+        <p style="font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:17px;color:#e8e8e8;margin:0;line-height:1.9;white-space:pre"><span style="color:#06b6d4">from</span> transformers <span style="color:#06b6d4">import</span> pipeline
+
+clf = pipeline(<span style="color:#7c3aed">"sentiment"</span>)
+result = clf(<span style="color:#06b6d4">"这个产品太棒了！"</span>)
+<span style="color:#3a3a3a"># {'label': 'POSITIVE', 'score': 0.9998}</span></p>
+      </div>
+      <div class="card" id="s6-code2">
+        <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:17px;color:#e8e8e8;margin:0 0 10px 0">微调预训练模型</p>
+        <p style="font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:17px;color:#e8e8e8;margin:0;line-height:1.9;white-space:pre"><span style="color:#06b6d4">from</span> transformers <span style="color:#06b6d4">import</span> AutoModelForSequenceClassification
+
+model = AutoModelForSequenceClassification.from_pretrained(
+    <span style="color:#7c3aed">"bert-base-chinese"</span>,
+    num_labels=<span style="color:#7c3aed">2</span>
+)
+trainer.train()</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCENE 7: GBDT ==================== -->
+<div id="scene7" class="scene">
+  <div class="dot-grid"></div>
+  <div class="glow" style="width:500px;height:500px;background:#06b6d4;bottom:-100px;right:300px;opacity:0.1" id="s7-glow1"></div>
+  <div class="hairline" style="top:80px;left:140px;width:200px" id="s7-line1"></div>
+
+  <div class="scene-content">
+    <p class="body" style="font-size:18px;letter-spacing:0.1em;text-transform:uppercase;color:#7c3aed;margin:0 0 12px 0" id="s7-sec">表格数据之王</p>
+    <h2 class="headline" style="font-size:72px;margin:0 0 48px 0" id="s7-title">GBDT <span style="font-size:48px;color:#3a3a3a">三剑客</span></h2>
+
+    <div style="display:flex;gap:28px;flex:1" id="s7-cards">
+      <!-- XGBoost -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:16px">
+        <div class="card card-accent" style="text-align:center;padding:24px 20px">
+          <p style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:32px;color:#7c3aed;margin:0">XGBoost</p>
+          <p class="body" style="font-size:16px;margin:6px 0 0 0">正则化 Boosting</p>
+        </div>
+        <div class="card" style="flex:1">
+          <p style="font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:16px;color:#e8e8e8;margin:0;line-height:1.8;white-space:pre">model = XGBClassifier(
+  n_estimators=<span style="color:#7c3aed">500</span>,
+  max_depth=<span style="color:#7c3aed">6</span>,
+  lr=<span style="color:#7c3aed">0.1</span>
+)
+model.fit(X_train, y_train)</p>
+        </div>
+        <div style="display:flex;gap:8px"><span class="tag tag-purple">均衡</span><span class="tag tag-purple">稳定</span></div>
+      </div>
+
+      <!-- LightGBM -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:16px">
+        <div class="card card-cyan" style="text-align:center;padding:24px 20px">
+          <p style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:32px;color:#06b6d4;margin:0">LightGBM</p>
+          <p class="body" style="font-size:16px;margin:6px 0 0 0">速度之王</p>
+        </div>
+        <div class="card" style="flex:1">
+          <p style="font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:16px;color:#e8e8e8;margin:0;line-height:1.8;white-space:pre">model = LGBMClassifier(
+  n_estimators=<span style="color:#06b6d4">1000</span>,
+  num_leaves=<span style="color:#06b6d4">31</span>,
+  lr=<span style="color:#06b6d4">0.05</span>
+)
+model.fit(X_train, y_train)</p>
+        </div>
+        <div style="display:flex;gap:8px"><span class="tag tag-cyan">最快</span><span class="tag tag-cyan">大数据</span></div>
+      </div>
+
+      <!-- CatBoost -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:16px">
+        <div class="card" style="text-align:center;padding:24px 20px;border-color:rgba(232,232,232,0.2)">
+          <p style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:32px;color:#e8e8e8;margin:0">CatBoost</p>
+          <p class="body" style="font-size:16px;margin:6px 0 0 0">类别特征专家</p>
+        </div>
+        <div class="card" style="flex:1">
+          <p style="font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:16px;color:#e8e8e8;margin:0;line-height:1.8;white-space:pre">model = CatBoostClassifier(
+  iterations=<span style="color:#7c3aed">1000</span>,
+  depth=<span style="color:#7c3aed">6</span>,
+  cat_features=cat_cols
+)
+model.fit(train_pool)</p>
+        </div>
+        <div style="display:flex;gap:8px"><span class="tag tag-purple">自动编码</span><span class="tag tag-cyan">防过拟合</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCENE 8: DECISION TREE ==================== -->
+<div id="scene8" class="scene">
+  <div class="dot-grid"></div>
+  <div class="glow" style="width:500px;height:500px;background:#7c3aed;top:-50px;right:400px;opacity:0.1" id="s8-glow1"></div>
+  <div class="ghost-text" style="top:100px;right:-60px;font-size:200px;opacity:0.03" id="s8-ghost">?</div>
+  <div class="hairline" style="top:80px;left:140px;width:200px" id="s8-line1"></div>
+
+  <div class="scene-content">
+    <p class="body" style="font-size:18px;letter-spacing:0.1em;text-transform:uppercase;color:#7c3aed;margin:0 0 12px 0" id="s8-sec">选型指南</p>
+    <h2 class="headline" style="font-size:72px;margin:0 0 48px 0" id="s8-title">框架选型决策树</h2>
+
+    <div style="display:flex;gap:36px;flex:1" id="s8-tree">
+      <!-- Decision cards -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:20px">
+        <div class="card card-accent" style="padding:24px">
+          <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:22px;color:#7c3aed;margin:0 0 12px 0">你的数据是什么？</p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:8px;height:8px;border-radius:50%;background:#7c3aed"></div>
+              <span class="body" style="font-size:18px;margin:0">表格 / CSV → Scikit-learn + GBDT</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:8px;height:8px;border-radius:50%;background:#06b6d4"></div>
+              <span class="body" style="font-size:18px;margin:0">图像 / 视频 → PyTorch / TF</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:8px;height:8px;border-radius:50%;background:#06b6d4"></div>
+              <span class="body" style="font-size:18px;margin:0">文本 / NLP → Hugging Face</span>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="padding:24px">
+          <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:22px;color:#e8e8e8;margin:0 0 12px 0">你的目标是什么？</p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:8px;height:8px;border-radius:50%;background:#7c3aed"></div>
+              <span class="body" style="font-size:18px;margin:0">快速验证 → Keras</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:8px;height:8px;border-radius:50%;background:#06b6d4"></div>
+              <span class="body" style="font-size:18px;margin:0">研究创新 → PyTorch</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:8px;height:8px;border-radius:50%;background:#7c3aed"></div>
+              <span class="body" style="font-size:18px;margin:0">生产部署 → TF Serving</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendation -->
+      <div style="flex:0 0 420px;display:flex;flex-direction:column;gap:20px">
+        <div class="card card-cyan" style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:40px 32px">
+          <p style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:28px;color:#06b6d4;margin:0 0 20px 0">推荐组合</p>
+          <div style="display:flex;flex-direction:column;gap:14px;width:100%">
+            <div style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3);border-radius:8px;padding:14px 18px;text-align:left">
+              <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:20px;color:#e8e8e8;margin:0">PyTorch</p>
+              <p class="body" style="font-size:16px;margin:4px 0 0 0">深度学习主框架</p>
+            </div>
+            <div style="background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.2);border-radius:8px;padding:14px 18px;text-align:left">
+              <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:20px;color:#e8e8e8;margin:0">Scikit-learn</p>
+              <p class="body" style="font-size:16px;margin:4px 0 0 0">传统 ML + 数据处理</p>
+            </div>
+            <div style="background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.15);border-radius:8px;padding:14px 18px;text-align:left">
+              <p style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:20px;color:#e8e8e8;margin:0">LightGBM</p>
+              <p class="body" style="font-size:16px;margin:4px 0 0 0">表格数据首选</p>
+            </div>
+          </div>
+          <p class="body" style="font-size:15px;margin:20px 0 0 0;color:#3a3a3a">覆盖 90% 场景的三个框架</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCENE 9: OUTRO ==================== -->
+<div id="scene9" class="scene">
+  <div class="dot-grid"></div>
+  <div class="glow" style="width:600px;height:600px;background:#7c3aed;top:140px;left:560px;opacity:0.1" id="s9-glow1"></div>
+  <div class="glow" style="width:400px;height:400px;background:#06b6d4;bottom:50px;left:200px;opacity:0.06" id="s9-glow2"></div>
+  <div class="ghost-text" style="top:200px;left:140px;font-size:300px;opacity:0.02" id="s9-ghost">ML</div>
+
+  <div class="scene-content" style="justify-content:center;align-items:center;text-align:center">
+    <h2 class="headline" style="font-size:88px;margin:0 0 20px 0" id="s9-title">开始构建<span class="accent-purple">你的</span>模型</h2>
+    <p class="body" style="font-size:24px;max-width:700px;margin:0 0 48px 0" id="s9-sub">
+      选一个深度学习框架 + Scikit-learn + 一个 GBDT 库<br/>其余在工作中按需学习
+    </p>
+    <div style="display:flex;gap:20px" id="s9-path">
+      <span class="tag tag-purple" style="font-size:18px;padding:10px 24px">NumPy → Scikit-learn</span>
+      <span style="color:#3a3a3a;font-family:'DM Sans',sans-serif;font-size:28px;line-height:2.4">→</span>
+      <span class="tag tag-cyan" style="font-size:18px;padding:10px 24px">PyTorch / Keras</span>
+      <span style="color:#3a3a3a;font-family:'DM Sans',sans-serif;font-size:28px;line-height:2.4">→</span>
+      <span class="tag tag-purple" style="font-size:18px;padding:10px 24px">Hugging Face</span>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+window.__timelines = window.__timelines || {};
+var tl = gsap.timeline({ paused: true });
+
+// === TIMING ===
+var S1 = 8, S2 = 9, S3 = 9, S4 = 9, S5 = 9, S6 = 9, S7 = 9, S8 = 9, S9 = 8;
+var t1 = S1;                    // 8
+var t2 = t1 + S2;               // 17
+var t3 = t2 + S3;               // 26
+var t4 = t3 + S4;               // 35
+var t5 = t4 + S5;               // 44
+var t6 = t5 + S6;               // 53
+var t7 = t6 + S7;               // 62
+var t8 = t7 + S8;               // 71
+var TOTAL = t8 + S9;            // 79
+
+// === HELPER: Grid Dissolve ===
+function gridDissolve(tl, oldScene, newScene, T, dur) {
+  var cols = 4, rows = 3, cellW = 480, cellH = 270;
+  var cells = [];
+  var centerX = 960, centerY = 540;
+
+  for (var r = 0; r < rows; r++) {
+    for (var c = 0; c < cols; c++) {
+      var cx = c * cellW + cellW / 2;
+      var cy = r * cellH + cellH / 2;
+      var dist = Math.sqrt((cx - centerX) * (cx - centerX) + (cy - centerY) * (cy - centerY));
+      cells.push({ x: c * cellW, y: r * cellH, dist: dist });
+    }
+  }
+  cells.sort(function(a, b) { return a.dist - b.dist; });
+
+  var maxDist = cells[cells.length - 1].dist;
+
+  for (var i = 0; i < cells.length; i++) {
+    var cell = cells[i];
+    var delay = (cell.dist / maxDist) * (dur * 0.3);
+    tl.fromTo("#gd-" + T + "-" + i,
+      { x: cell.x, y: cell.y, opacity: 0 },
+      { opacity: 0.85, duration: dur * 0.3, ease: "power2.out" },
+      T + delay
+    );
+  }
+
+  var swapT = T + dur * 0.45;
+  tl.set(oldScene, { opacity: 0 }, swapT);
+  tl.set(newScene, { opacity: 1 }, swapT);
+
+  for (var i = 0; i < cells.length; i++) {
+    var cell = cells[i];
+    var delay = (cell.dist / maxDist) * (dur * 0.3);
+    tl.to("#gd-" + T + "-" + i,
+      { opacity: 0, duration: dur * 0.25, ease: "power2.in" },
+      swapT + delay
+    );
+  }
+}
+
+// === HELPER: Blur Crossfade ===
+function blurCrossfade(tl, oldScene, newScene, T) {
+  tl.to(oldScene, { filter: "blur(10px)", scale: 1.03, opacity: 0, duration: 0.5, ease: "power2.inOut" }, T);
+  tl.fromTo(newScene,
+    { filter: "blur(10px)", scale: 0.97, opacity: 0 },
+    { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, T + 0.1
+  );
+}
+
+// === HELPER: Color Dip ===
+function colorDip(tl, oldScene, newScene, T) {
+  tl.to(oldScene, { opacity: 0, duration: 0.3, ease: "power2.in" }, T);
+  tl.fromTo(newScene, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, T + 0.35);
+}
+
+
+// ===================== SCENE 1: Title =====================
+tl.to("#s1-glow1", { scale: 1.15, duration: 3, ease: "sine.inOut", repeat: 1, yoyo: true }, 0);
+tl.to("#s1-glow2", { scale: 1.1, x: 30, duration: 4, ease: "sine.inOut", repeat: 1, yoyo: true }, 0.5);
+tl.to("#s1-ghost1", { x: -20, duration: 5, ease: "sine.inOut", repeat: 1, yoyo: true }, 0);
+tl.to("#s1-ghost2", { x: 15, duration: 6, ease: "sine.inOut", repeat: 1, yoyo: true }, 0.5);
+
+tl.from("#s1-tags", { y: 30, opacity: 0, duration: 0.6, ease: "power3.out" }, 0.3);
+tl.from("#s1-title", { y: 50, opacity: 0, duration: 0.7, ease: "power2.out" }, 0.5);
+tl.from("#s1-sub", { y: 30, opacity: 0, duration: 0.5, ease: "power2.out" }, 0.8);
+tl.from("#s1-line1", { scaleX: 0, duration: 0.6, ease: "power3.out" }, 1.1);
+
+
+// ===================== TRANSITION 1→2: Grid Dissolve =====================
+(function() {
+  var cols = 4, rows = 3, cellW = 480, cellH = 270;
+  var container = document.getElementById("root");
+  var idx = 0;
+  for (var r = 0; r < rows; r++) {
+    for (var c = 0; c < cols; c++) {
+      var el = document.createElement("div");
+      el.className = "grid-cell";
+      el.id = "gd-" + t1 + "-" + idx;
+      var colors = ["#7c3aed", "#06b6d4", "#1a1a2e"];
+      el.style.cssText = "position:absolute;width:" + cellW + "px;height:" + cellH + "px;top:" + (r * cellH) + "px;left:" + (c * cellW) + "px;opacity:0;pointer-events:none;border-radius:4px;background:" + colors[idx % colors.length] + ";";
+      container.appendChild(el);
+      idx++;
+    }
+  }
+})();
+gridDissolve(tl, "#scene1", "#scene2", t1, 0.7);
+
+
+// ===================== SCENE 2: Overview =====================
+tl.to("#s2-glow1", { scale: 1.12, duration: 3.5, ease: "sine.inOut", repeat: 2, yoyo: true }, t1 + 0.5);
+tl.from("#s2-sec", { y: 20, opacity: 0, duration: 0.5, ease: "power2.out" }, t1 + 1.0);
+tl.from("#s2-title", { y: 40, opacity: 0, duration: 0.6, ease: "power3.out" }, t1 + 1.1);
+tl.from("#s2-line1", { scaleX: 0, duration: 0.5, ease: "power3.out" }, t1 + 1.3);
+tl.from("#s2-tree", { x: -40, opacity: 0, duration: 0.6, ease: "power2.out" }, t1 + 1.3);
+tl.from("#s2-matrix-title", { y: 20, opacity: 0, duration: 0.4, ease: "power2.out" }, t1 + 1.5);
+tl.from("#s2-matrix > div:nth-child(2)", { x: 30, opacity: 0, duration: 0.4, ease: "power2.out" }, t1 + 1.55);
+tl.from("#s2-matrix > div:nth-child(3)", { x: 30, opacity: 0, duration: 0.4, ease: "power2.out" }, t1 + 1.60);
+tl.from("#s2-matrix > div:nth-child(4)", { x: 30, opacity: 0, duration: 0.4, ease: "power2.out" }, t1 + 1.65);
+tl.from("#s2-matrix > div:nth-child(5)", { x: 30, opacity: 0, duration: 0.4, ease: "power2.out" }, t1 + 1.70);
+tl.from("#s2-matrix > div:nth-child(6)", { x: 30, opacity: 0, duration: 0.4, ease: "power2.out" }, t1 + 1.75);
+
+
+// ===================== TRANSITION 2→3: Blur Crossfade =====================
+blurCrossfade(tl, "#scene2", "#scene3", t2);
+
+
+// ===================== SCENE 3: NumPy =====================
+tl.to("#s3-glow1", { scale: 1.15, x: 20, duration: 4, ease: "sine.inOut", repeat: 2, yoyo: true }, t2 + 0.5);
+tl.to("#s3-ghost", { y: -15, duration: 5, ease: "sine.inOut", repeat: 2, yoyo: true }, t2 + 0.3);
+tl.from("#s3-sec", { y: 20, opacity: 0, duration: 0.5, ease: "expo.out" }, t2 + 0.6);
+tl.from("#s3-line1", { scaleX: 0, duration: 0.5, ease: "power3.out" }, t2 + 0.7);
+tl.from("#s3-title", { x: -30, opacity: 0, duration: 0.6, ease: "power3.out" }, t2 + 0.8);
+tl.from("#s3-desc", { y: 20, opacity: 0, duration: 0.5, ease: "power2.out" }, t2 + 1.0);
+tl.from("#s3-features", { y: 20, opacity: 0, duration: 0.4, ease: "power2.out" }, t2 + 1.2);
+tl.from("#s3-code1", { x: 40, opacity: 0, duration: 0.6, ease: "power2.out" }, t2 + 0.9);
+tl.from("#s3-code2", { x: 40, opacity: 0, duration: 0.5, ease: "power2.out" }, t2 + 1.15);
+
+
+// ===================== TRANSITION 3→4: Grid Dissolve =====================
+(function() {
+  var cols = 4, rows = 3, cellW = 480, cellH = 270;
+  var container = document.getElementById("root");
+  var idx = 0;
+  for (var r = 0; r < rows; r++) {
+    for (var c = 0; c < cols; c++) {
+      var el = document.createElement("div");
+      el.className = "grid-cell";
+      el.id = "gd-" + t3 + "-" + idx;
+      var colors = ["#7c3aed", "#0f0f1a", "#06b6d4"];
+      el.style.cssText = "position:absolute;width:" + cellW + "px;height:" + cellH + "px;top:" + (r * cellH) + "px;left:" + (c * cellW) + "px;opacity:0;pointer-events:none;border-radius:4px;background:" + colors[idx % colors.length] + ";";
+      container.appendChild(el);
+      idx++;
+    }
+  }
+})();
+gridDissolve(tl, "#scene3", "#scene4", t3, 0.7);
+
+
+// ===================== SCENE 4: Scikit-learn =====================
+tl.to("#s4-glow1", { scale: 1.1, y: 20, duration: 4, ease: "sine.inOut", repeat: 2, yoyo: true }, t3 + 0.5);
+tl.to("#s4-ghost", { x: -15, duration: 5, ease: "sine.inOut", repeat: 2, yoyo: true }, t3 + 0.3);
+tl.from("#s4-sec", { y: 20, opacity: 0, duration: 0.5, ease: "power2.out" }, t3 + 1.0);
+tl.from("#s4-line1", { scaleX: 0, duration: 0.5, ease: "power3.out" }, t3 + 1.1);
+tl.from("#s4-title", { y: 40, opacity: 0, duration: 0.6, ease: "power3.out" }, t3 + 1.1);
+tl.from("#s4-desc", { y: 20, opacity: 0, duration: 0.5, ease: "power2.out" }, t3 + 1.3);
+tl.from("#s4-api", { y: 30, opacity: 0, duration: 0.5, ease: "expo.out" }, t3 + 1.4);
+tl.from("#s4-models-title", { y: 20, opacity: 0, duration: 0.4, ease: "power2.out" }, t3 + 1.3);
+tl.from("#s4-models", { x: 30, opacity: 0, duration: 0.6, ease: "power2.out" }, t3 + 1.4);
+tl.from("#s4-pipeline", { y: 20, opacity: 0, duration: 0.5, ease: "power3.out" }, t3 + 1.6);
+
+
+// ===================== TRANSITION 4→5: Blur Crossfade =====================
+blurCrossfade(tl, "#scene4", "#scene5", t4);
+
+
+// ===================== SCENE 5: PyTorch vs TensorFlow =====================
+tl.to("#s5-glow1", { scale: 1.1, y: -15, duration: 4, ease: "sine.inOut", repeat: 2, yoyo: true }, t4 + 0.5);
+tl.to("#s5-glow2", { scale: 1.12, y: 15, duration: 4.5, ease: "sine.inOut", repeat: 2, yoyo: true }, t4 + 0.7);
+tl.from("#s5-sec", { y: 20, opacity: 0, duration: 0.5, ease: "power2.out" }, t4 + 0.6);
+tl.from("#s5-line1", { scaleX: 0, duration: 0.5, ease: "power3.out" }, t4 + 0.7);
+tl.from("#s5-title", { y: 40, opacity: 0, duration: 0.6, ease: "power3.out" }, t4 + 0.8);
+tl.from("#s5-pytorch", { x: -40, opacity: 0, duration: 0.6, ease: "power2.out" }, t4 + 1.0);
+tl.from("#s5-tf", { x: 40, opacity: 0, duration: 0.6, ease: "power2.out" }, t4 + 1.1);
+
+
+// ===================== TRANSITION 5→6: Grid Dissolve =====================
+(function() {
+  var cols = 4, rows = 3, cellW = 480, cellH = 270;
+  var container = document.getElementById("root");
+  var idx = 0;
+  for (var r = 0; r < rows; r++) {
+    for (var c = 0; c < cols; c++) {
+      var el = document.createElement("div");
+      el.className = "grid-cell";
+      el.id = "gd-" + t6 + "-" + idx;
+      var colors = ["#06b6d4", "#7c3aed", "#1a1a2e"];
+      el.style.cssText = "position:absolute;width:" + cellW + "px;height:" + cellH + "px;top:" + (r * cellH) + "px;left:" + (c * cellW) + "px;opacity:0;pointer-events:none;border-radius:4px;background:" + colors[idx % colors.length] + ";";
+      container.appendChild(el);
+      idx++;
+    }
+  }
+})();
+gridDissolve(tl, "#scene5", "#scene6", t6, 0.7);
+
+
+// ===================== SCENE 6: Hugging Face =====================
+tl.to("#s6-glow1", { scale: 1.1, x: 30, duration: 4, ease: "sine.inOut", repeat: 2, yoyo: true }, t6 + 0.5);
+tl.to("#s6-ghost", { x: -15, duration: 5, ease: "sine.inOut", repeat: 2, yoyo: true }, t6 + 0.3);
+tl.from("#s6-sec", { y: 20, opacity: 0, duration: 0.5, ease: "expo.out" }, t6 + 1.0);
+tl.from("#s6-line1", { scaleX: 0, duration: 0.5, ease: "power3.out" }, t6 + 1.1);
+tl.from("#s6-title", { x: -30, opacity: 0, duration: 0.6, ease: "power3.out" }, t6 + 1.1);
+tl.from("#s6-desc", { y: 20, opacity: 0, duration: 0.5, ease: "power2.out" }, t6 + 1.3);
+tl.from("#s6-ecosystem", { y: 30, opacity: 0, duration: 0.5, ease: "power2.out" }, t6 + 1.4);
+tl.from("#s6-code1", { x: 40, opacity: 0, duration: 0.6, ease: "power2.out" }, t6 + 1.2);
+tl.from("#s6-code2", { x: 40, opacity: 0, duration: 0.5, ease: "power2.out" }, t6 + 1.4);
+
+
+// ===================== TRANSITION 6→7: Blur Crossfade =====================
+blurCrossfade(tl, "#scene6", "#scene7", t7);
+
+
+// ===================== SCENE 7: GBDT =====================
+tl.to("#s7-glow1", { scale: 1.12, x: -20, duration: 4, ease: "sine.inOut", repeat: 2, yoyo: true }, t7 + 0.5);
+tl.from("#s7-sec", { y: 20, opacity: 0, duration: 0.5, ease: "power2.out" }, t7 + 0.6);
+tl.from("#s7-line1", { scaleX: 0, duration: 0.5, ease: "power3.out" }, t7 + 0.7);
+tl.from("#s7-title", { y: 40, opacity: 0, duration: 0.6, ease: "power3.out" }, t7 + 0.8);
+tl.from("#s7-cards > div:nth-child(1)", { y: 40, opacity: 0, duration: 0.5, ease: "power2.out" }, t7 + 1.1);
+tl.from("#s7-cards > div:nth-child(2)", { y: 40, opacity: 0, duration: 0.5, ease: "power2.out" }, t7 + 1.2);
+tl.from("#s7-cards > div:nth-child(3)", { y: 40, opacity: 0, duration: 0.5, ease: "power2.out" }, t7 + 1.3);
+
+
+// ===================== TRANSITION 7→8: Grid Dissolve =====================
+(function() {
+  var cols = 4, rows = 3, cellW = 480, cellH = 270;
+  var container = document.getElementById("root");
+  var idx = 0;
+  for (var r = 0; r < rows; r++) {
+    for (var c = 0; c < cols; c++) {
+      var el = document.createElement("div");
+      el.className = "grid-cell";
+      el.id = "gd-" + t8 + "-" + idx;
+      var colors = ["#7c3aed", "#0a0a0a", "#06b6d4"];
+      el.style.cssText = "position:absolute;width:" + cellW + "px;height:" + cellH + "px;top:" + (r * cellH) + "px;left:" + (c * cellW) + "px;opacity:0;pointer-events:none;border-radius:4px;background:" + colors[idx % colors.length] + ";";
+      container.appendChild(el);
+      idx++;
+    }
+  }
+})();
+gridDissolve(tl, "#scene7", "#scene8", t8, 0.7);
+
+
+// ===================== SCENE 8: Decision Tree =====================
+tl.to("#s8-glow1", { scale: 1.1, x: 20, duration: 4, ease: "sine.inOut", repeat: 2, yoyo: true }, t8 + 0.5);
+tl.to("#s8-ghost", { y: -10, duration: 5, ease: "sine.inOut", repeat: 2, yoyo: true }, t8 + 0.3);
+tl.from("#s8-sec", { y: 20, opacity: 0, duration: 0.5, ease: "power2.out" }, t8 + 1.0);
+tl.from("#s8-line1", { scaleX: 0, duration: 0.5, ease: "power3.out" }, t8 + 1.1);
+tl.from("#s8-title", { y: 40, opacity: 0, duration: 0.6, ease: "power3.out" }, t8 + 1.1);
+tl.from("#s8-tree > div:nth-child(1)", { x: -30, opacity: 0, duration: 0.6, ease: "power2.out" }, t8 + 1.3);
+tl.from("#s8-tree > div:nth-child(2)", { x: 30, opacity: 0, duration: 0.6, ease: "power2.out" }, t8 + 1.4);
+
+
+// ===================== TRANSITION 8→9: Color Dip =====================
+colorDip(tl, "#scene8", "#scene9", t8 + S8 - 0.3);
+
+
+// ===================== SCENE 9: Outro =====================
+tl.to("#s9-glow1", { scale: 1.15, duration: 3, ease: "sine.inOut", repeat: 2, yoyo: true }, t8 + S8);
+tl.to("#s9-glow2", { scale: 1.1, y: -20, duration: 3.5, ease: "sine.inOut", repeat: 2, yoyo: true }, t8 + S8 + 0.3);
+tl.from("#s9-title", { y: 50, opacity: 0, duration: 0.7, ease: "power3.out" }, t8 + S8 + 0.4);
+tl.from("#s9-sub", { y: 30, opacity: 0, duration: 0.5, ease: "power2.out" }, t8 + S8 + 0.7);
+tl.from("#s9-path", { y: 20, opacity: 0, duration: 0.5, ease: "power2.out" }, t8 + S8 + 1.0);
+
+
+// === REGISTER ===
+window.__timelines["main"] = tl;
+
+// === PREVIEW PLAYER (browser only) ===
+if (!window.__hyperframes) {
+  var controls = document.createElement('div');
+  controls.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(10,10,10,0.95);border:1px solid #7c3aed;border-radius:12px;padding:14px 20px;display:flex;gap:10px;z-index:9999;font-family:system-ui,sans-serif;flex-wrap:wrap;max-width:90vw;justify-content:center;backdrop-filter:blur(10px);';
+
+  var playBtn = document.createElement('button');
+  playBtn.textContent = '▶ 播放';
+  playBtn.style.cssText = 'background:linear-gradient(135deg,#7c3aed,#06b6d4);border:none;border-radius:8px;padding:10px 20px;color:#e8e8e8;font-weight:600;cursor:pointer;font-size:14px;';
+
+  var scenes = [
+    { name: '标题', time: 0 },
+    { name: '全景', time: t1 },
+    { name: 'NumPy', time: t2 },
+    { name: 'Sklearn', time: t3 },
+    { name: 'PyTorch/TF', time: t4 },
+    { name: 'HuggingFace', time: t6 },
+    { name: 'GBDT', time: t7 },
+    { name: '选型', time: t8 },
+    { name: 'Outro', time: t8 + S8 }
+  ];
+
+  var isPlaying = false;
+  playBtn.onclick = function() {
+    if (isPlaying) {
+      tl.pause();
+      playBtn.textContent = '▶ 播放';
+    } else {
+      tl.play();
+      playBtn.textContent = '⏸ 暂停';
+    }
+    isPlaying = !isPlaying;
+  };
+
+  controls.appendChild(playBtn);
+
+  scenes.forEach(function(scene, i) {
+    var btn = document.createElement('button');
+    btn.textContent = (i + 1) + '. ' + scene.name;
+    btn.style.cssText = 'background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3);border-radius:6px;padding:8px 14px;color:#7c3aed;cursor:pointer;font-size:12px;';
+    btn.onmouseover = function() { btn.style.background = 'rgba(124,58,237,0.2)'; };
+    btn.onmouseout = function() { btn.style.background = 'rgba(124,58,237,0.1)'; };
+    btn.onclick = function() {
+      tl.pause();
+      tl.time(scene.time);
+      playBtn.textContent = '▶ 播放';
+      isPlaying = false;
+    };
+    controls.appendChild(btn);
+  });
+
+  document.body.appendChild(controls);
+
+  var tip = document.createElement('div');
+  tip.textContent = '💡 点击「播放」查看完整动画，或点击场景按钮跳转查看特定章节';
+  tip.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3);border-radius:8px;padding:12px 20px;color:#7c3aed;font-size:14px;z-index:9999;text-align:center;font-family:system-ui,sans-serif;';
+  document.body.appendChild(tip);
+
+  setTimeout(function() {
+    tip.style.opacity = '0';
+    tip.style.transition = 'opacity 0.5s';
+  }, 6000);
+}
+</script>
+
+</body>
+</html>

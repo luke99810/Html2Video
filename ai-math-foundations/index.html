@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI的数学基础</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+      background: #0D1117;
+      color: #f8fafc;
+      overflow: hidden;
+    }
+    
+    [data-composition-id="main"] {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      background: #0D1117;
+      overflow: hidden;
+    }
+    
+    /* 背景网格 */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+    
+    .glow {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 212, 255, 0.08) 0%, transparent 70%);
+      filter: blur(60px);
+      pointer-events: none;
+    }
+    .glow-1 { top: -150px; right: -50px; }
+    .glow-2 { bottom: -150px; left: -50px; background: radial-gradient(circle, rgba(124, 58, 237, 0.06) 0%, transparent 70%); }
+    
+    /* ===== 场景通用样式 ===== */
+    .scene {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 120px 160px;
+      opacity: 0;
+    }
+    
+    .scene:first-child { opacity: 1; }
+    
+    .section-header { text-align: center; margin-bottom: 60px; }
+    .section-number { font-size: 16px; color: #00D4FF; font-weight: 600; letter-spacing: 0.2em; margin-bottom: 16px; }
+    .section-title { font-size: 72px; font-weight: 800; color: #f8fafc; line-height: 1.1; }
+    .section-subtitle { font-size: 24px; color: #94a3b8; margin-top: 20px; }
+    
+    /* ===== 通用组件 ===== */
+    .formula-box {
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 16px;
+      padding: 32px 48px;
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .formula {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 28px;
+      color: #00D4FF;
+      line-height: 1.6;
+    }
+    
+    .formula-desc {
+      font-size: 18px;
+      color: #94a3b8;
+      margin-top: 16px;
+    }
+    
+    .highlight { color: #00D4FF; font-weight: 600; }
+    .highlight-purple { color: #a78bfa; font-weight: 600; }
+    .highlight-yellow { color: #fbbf24; font-weight: 600; }
+    
+    /* ===== 场景 1: 开场 ===== */
+    .scene-intro {
+      text-align: center;
+    }
+    
+    .main-title {
+      font-size: 96px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #00D4FF 0%, #7c3aed 50%, #00D4FF 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    
+    .intro-subtitle {
+      font-size: 28px;
+      color: #94a3b8;
+      margin-top: 32px;
+    }
+    
+    .pillars {
+      display: flex;
+      gap: 32px;
+      margin-top: 60px;
+    }
+    
+    .pillar {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      border-radius: 16px;
+      padding: 28px 36px;
+      text-align: center;
+    }
+    
+    .pillar-icon { font-size: 40px; margin-bottom: 12px; }
+    .pillar-name { font-size: 20px; font-weight: 600; color: #f8fafc; }
+    
+    /* ===== 内容区域 ===== */
+    .content-layout {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px;
+      width: 100%;
+      max-width: 1400px;
+    }
+    
+    .content-card {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      border-radius: 20px;
+      padding: 36px;
+    }
+    
+    .card-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #00D4FF;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(100, 116, 139, 0.3);
+    }
+    
+    .card-content {
+      font-size: 18px;
+      color: #cbd5e1;
+      line-height: 1.8;
+    }
+    
+    .card-content li {
+      margin: 12px 0;
+      padding-left: 8px;
+    }
+    
+    /* ===== 公式网格 ===== */
+    .formula-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      width: 100%;
+      max-width: 1200px;
+    }
+    
+    .formula-item {
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 16px;
+      padding: 28px;
+      text-align: center;
+    }
+    
+    .formula-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #00D4FF;
+      margin-bottom: 16px;
+    }
+    
+    .formula-expr {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 22px;
+      color: #fbbf24;
+      margin-bottom: 12px;
+    }
+    
+    .formula-note {
+      font-size: 14px;
+      color: #94a3b8;
+    }
+    
+    /* ===== 总结场景 ===== */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+      width: 100%;
+      max-width: 1200px;
+    }
+    
+    .summary-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 2px solid;
+      border-radius: 20px;
+      padding: 32px;
+      text-align: center;
+    }
+    
+    .summary-card.calculus { border-color: #f97316; }
+    .summary-card.linear { border-color: #8b5cf6; }
+    .summary-card.probability { border-color: #10b981; }
+    .summary-card.information { border-color: #06b6d4; }
+    
+    .summary-icon { font-size: 48px; margin-bottom: 16px; }
+    .summary-name { font-size: 28px; font-weight: 700; margin-bottom: 12px; }
+    .summary-card.calculus .summary-name { color: #f97316; }
+    .summary-card.linear .summary-name { color: #8b5cf6; }
+    .summary-card.probability .summary-name { color: #10b981; }
+    .summary-card.information .summary-name { color: #06b6d4; }
+    
+    .summary-desc { font-size: 16px; color: #94a3b8; line-height: 1.6; }
+    
+    /* ===== 播放控制面板 ===== */
+    .player-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30, 41, 59, 0.95);
+      border: 1px solid #00D4FF;
+      border-radius: 12px;
+      padding: 14px 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 9999;
+      font-family: system-ui, sans-serif;
+      flex-wrap: wrap;
+      max-width: 90vw;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+    }
+    
+    .play-btn {
+      background: linear-gradient(135deg, #00D4FF, #7c3aed);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      color: #0a0a0f;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .scene-btn {
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 6px;
+      padding: 8px 14px;
+      color: #00D4FF;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    
+    .scene-btn:hover {
+      background: rgba(0, 212, 255, 0.2);
+      border-color: #00D4FF;
+    }
+    
+    /* ===== 顶部提示 ===== */
+    .player-tip {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 8px;
+      padding: 12px 20px;
+      color: #00D4FF;
+      font-size: 14px;
+      z-index: 9999;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div data-composition-id="main" data-width="1920" data-height="1080" data-start="0" data-duration="90">
+    <div class="grid-bg"></div>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+    
+    <!-- 场景 1: 开场 (0-8s) -->
+    <div class="scene scene-intro" id="scene-intro">
+      <h1 class="main-title">AI的数学基础</h1>
+      <p class="intro-subtitle">理解人工智能背后的数学原理</p>
+      <div class="pillars">
+        <div class="pillar">
+          <div class="pillar-icon">∫</div>
+          <div class="pillar-name">微积分</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">⊞</div>
+          <div class="pillar-name">线性代数</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">P</div>
+          <div class="pillar-name">概率论</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">H</div>
+          <div class="pillar-name">信息论</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 场景 2: 为什么需要数学 (8-20s) -->
+    <div class="scene" id="scene-why">
+      <div class="section-header">
+        <p class="section-number">CHAPTER 01</p>
+        <h2 class="section-title">为什么AI离不开数学？</h2>
+      </div>
+      <div class="content-layout">
+        <div class="content-card">
+          <div class="card-title">AI = 优化问题</div>
+          <div class="card-content">
+            <ul>
+              <li>训练神经网络就是在 <span class="highlight">最小化损失函数</span></li>
+              <li>梯度下降法是优化的核心工具</li>
+              <li>链式法则让反向传播成为可能</li>
+            </ul>
+          </div>
+        </div>
+        <div class="content-card">
+          <div class="card-title">数据 = 数学对象</div>
+          <div class="card-content">
+            <ul>
+              <li>文本、图像都是 <span class="highlight-purple">向量和矩阵</span></li>
+              <li>注意力机制是矩阵运算</li>
+              <li>Embedding 把语义压缩成向量</li>
+            </ul>
+          </div>
+        </div>
+        <div class="content-card">
+          <div class="card-title">不确定性 = 概率</div>
+          <div class="card-content">
+            <ul>
+              <li>模型输出是 <span class="highlight-yellow">概率分布</span></li>
+              <li>贝叶斯推理处理先验知识</li>
+              <li>交叉熵衡量预测与真实差距</li>
+            </ul>
+          </div>
+        </div>
+        <div class="content-card">
+          <div class="card-title">信息 = 量化计算</div>
+          <div class="card-content">
+            <ul>
+              <li>信息熵衡量不确定性</li>
+              <li>KL散度比较概率分布</li>
+              <li>互信息评估特征相关性</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 场景 3: 微积分 (20-38s) -->
+    <div class="scene" id="scene-calculus">
+      <div class="section-header">
+        <p class="section-number">CHAPTER 02 · CALCULUS</p>
+        <h2 class="section-title">微积分：优化的数学</h2>
+        <p class="section-subtitle">导数、梯度、链式法则 — 神经网络学习的基石</p>
+      </div>
+      <div class="formula-grid">
+        <div class="formula-item">
+          <div class="formula-name">链式法则 (反向传播)</div>
+          <div class="formula-expr">∂L/∂x = ∂L/∂u · ∂u/∂x</div>
+          <div class="formula-note">计算损失对每个参数的梯度</div>
+        </div>
+        <div class="formula-item">
+          <div class="formula-name">梯度下降</div>
+          <div class="formula-expr">θ = θ - α · ∇θ J(θ)</div>
+          <div class="formula-note">沿梯度反方向更新参数</div>
+        </div>
+        <div class="formula-item">
+          <div class="formula-name">学习率调度</div>
+          <div class="formula-expr">α_t = α₀ / (1 + β·t)</div>
+          <div class="formula-note">随训练逐渐衰减学习率</div>
+        </div>
+        <div class="formula-item">
+          <div class="formula-name">动量优化</div>
+          <div class="formula-expr">v_t = β·v_{t-1} + ∇θ J(θ)</div>
+          <div class="formula-note">加速收敛，逃离局部最优</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 场景 4: 线性代数 (38-53s) -->
+    <div class="scene" id="scene-linear">
+      <div class="section-header">
+        <p class="section-number">CHAPTER 03 · LINEAR ALGEBRA</p>
+        <h2 class="section-title">线性代数：数据的语言</h2>
+        <p class="section-subtitle">向量、矩阵、张量 — AI的底层表示</p>
+      </div>
+      <div class="formula-grid">
+        <div class="formula-item">
+          <div class="formula-name">注意力机制</div>
+          <div class="formula-expr">Attention(Q,K,V) = softmax(QKᵀ/√d)V</div>
+          <div class="formula-note">Transformer 核心计算</div>
+        </div>
+        <div class="formula-item">
+          <div class="formula-name">矩阵乘法</div>
+          <div class="formula-expr">Y = W·X + b</div>
+          <div class="formula-note">神经网络层的前向传播</div>
+        </div>
+        <div class="formula-item">
+          <div class="formula-name">Embedding 查找</div>
+          <div class="formula-expr">v_token = W[token_id]</div>
+          <div class="formula-note">词向量查表操作</div>
+        </div>
+        <div class="formula-item">
+          <div class="formula-name">Layer Normalization</div>
+          <div class="formula-expr">y = (x - μ) / σ · γ + β</div>
+          <div class="formula-note">稳定训练的归一化操作</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 场景 5: 概率论 (53-68s) -->
+    <div class="scene" id="scene-probability">
+      <div class="section-header">
+        <p class="section-number">CHAPTER 04 · PROBABILITY</p>
+        <h2 class="section-title">概率论：不确定性的数学</h2>
+        <p class="section-subtitle">贝叶斯推断、概率分布、交叉熵</p>
+      </div>
+      <div class="formula-grid">
+        <div class="formula-item">
+          <div class="formula-name">贝叶斯定理</div>
+          <div class="formula-expr">P(A|B) = P(B|A)·P(A) / P(B)</div>
+          <div class="formula-note">融合先验知识与观测数据</div>
+        </div>
+        <div class="formula-item">
+          <div class="formula-name">交叉熵损失</div>
+          <div class="formula-expr">H(p,q) = -Σ p(x)·log(q(x))</div>
+          <div class="formula-note">分类任务的标准损失函数</div>
+        </div>
+        <div class="formula-item">
+          <div class="formula-name">正态分布</div>
+          <div class="formula-expr">N(x;μ,σ²) = exp(-(x-μ)²/2σ²) / √(2πσ²)</div>
+          <div class="formula-note">权重初始化和高斯噪声</div>
+        </div>
+        <div class="formula-item">
+          <div class="formula-name">最大似然估计</div>
+          <div class="formula-expr">θ* = argmax Π P(x_i|θ)</div>
+          <div class="formula-note">从数据中学习概率参数</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 场景 6: 信息论 (68-82s) -->
+    <div class="scene" id="scene-information">
+      <div class="section-header">
+        <p class="section-number">CHAPTER 05 · INFORMATION THEORY</p>
+        <h2 class="section-title">信息论：信息的度量</h2>
+        <p class="section-subtitle">熵、互信息、KL散度</p>
+      </div>
+      <div class="formula-grid">
+        <div class="formula-item">
+          <div class="formula-name">信息熵</div>
+          <div class="formula-expr">H(X) = -Σ p(x)·log₂ p(x)</div>
+          <div class="formula-note">衡量随机变量的不确定性</div>
+        </div>
+        <div class="formula-item">
+          <div class="formula-name">KL散度</div>
+          <div class="formula-expr">D_KL(P || Q) = Σ P(x)·log(P(x)/Q(x))</div>
+          <div class="formula-note">衡量两个分布的差异</div>
+        </div>
+        <div class="formula-item">
+          <div class="formula-name">互信息</div>
+          <div class="formula-expr">I(X;Y) = H(X) - H(X|Y)</div>
+          <div class="formula-note">衡量两个变量的相关性</div>
+        </div>
+        <div class="formula-item">
+          <div class="formula-name">困惑度</div>
+          <div class="formula-expr">PPL = exp(-1/T Σ log P(w_t))</div>
+          <div class="formula-note">语言模型的核心评估指标</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 场景 7: 总结 (82-90s) -->
+    <div class="scene" id="scene-summary">
+      <div class="section-header">
+        <p class="section-number">SUMMARY</p>
+        <h2 class="section-title">四大数学支柱</h2>
+        <p class="section-subtitle">构建现代AI的数学基础</p>
+      </div>
+      <div class="summary-grid">
+        <div class="summary-card calculus">
+          <div class="summary-icon">∫</div>
+          <div class="summary-name">微积分</div>
+          <div class="summary-desc">梯度下降<br>反向传播<br>优化算法</div>
+        </div>
+        <div class="summary-card linear">
+          <div class="summary-icon">⊞</div>
+          <div class="summary-name">线性代数</div>
+          <div class="summary-desc">矩阵运算<br>向量空间<br>张量操作</div>
+        </div>
+        <div class="summary-card probability">
+          <div class="summary-icon">P</div>
+          <div class="summary-name">概率论</div>
+          <div class="summary-desc">贝叶斯推断<br>概率分布<br>统计学习</div>
+        </div>
+        <div class="summary-card information">
+          <div class="summary-icon">H</div>
+          <div class="summary-name">信息论</div>
+          <div class="summary-desc">熵与互信息<br>KL散度<br>编码理论</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    window.__timelines = window.__timelines || {};
+    
+    const tl = gsap.timeline({ paused: true });
+    
+    // 场景 1: 开场 (0-8s)
+    tl.from(".main-title", { y: 60, opacity: 0, duration: 0.8, ease: "power3.out" }, 0.3)
+      .from(".intro-subtitle", { y: 40, opacity: 0, duration: 0.6, ease: "power2.out" }, 0.7)
+      .from(".pillar", { y: 30, opacity: 0, scale: 0.9, duration: 0.5, stagger: 0.15, ease: "back.out(1.2)" }, 1.2)
+      .to("#scene-intro", { opacity: 0, duration: 0.5 }, 7.5);
+    
+    // 场景 2: 为什么需要数学 (8-20s)
+    tl.set("#scene-why", { opacity: 1 }, 8)
+      .from("#scene-why .section-header > *", { y: 30, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" }, 8.2)
+      .from("#scene-why .content-card", { y: 40, opacity: 0, duration: 0.6, stagger: 0.15, ease: "power3.out" }, 9)
+      .from("#scene-why li", { x: -20, opacity: 0, duration: 0.4, stagger: 0.08, ease: "power2.out" }, 11)
+      .to("#scene-why", { opacity: 0, duration: 0.5 }, 19.5);
+    
+    // 场景 3: 微积分 (20-38s)
+    tl.set("#scene-calculus", { opacity: 1 }, 20)
+      .from("#scene-calculus .section-header > *", { y: 30, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" }, 20.2)
+      .from("#scene-calculus .formula-item", { y: 30, opacity: 0, scale: 0.95, duration: 0.5, stagger: 0.12, ease: "back.out(1.2)" }, 21)
+      .to("#scene-calculus", { opacity: 0, duration: 0.5 }, 37.5);
+    
+    // 场景 4: 线性代数 (38-53s)
+    tl.set("#scene-linear", { opacity: 1 }, 38)
+      .from("#scene-linear .section-header > *", { y: 30, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" }, 38.2)
+      .from("#scene-linear .formula-item", { y: 30, opacity: 0, scale: 0.95, duration: 0.5, stagger: 0.12, ease: "back.out(1.2)" }, 39)
+      .to("#scene-linear", { opacity: 0, duration: 0.5 }, 52.5);
+    
+    // 场景 5: 概率论 (53-68s)
+    tl.set("#scene-probability", { opacity: 1 }, 53)
+      .from("#scene-probability .section-header > *", { y: 30, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" }, 53.2)
+      .from("#scene-probability .formula-item", { y: 30, opacity: 0, scale: 0.95, duration: 0.5, stagger: 0.12, ease: "back.out(1.2)" }, 54)
+      .to("#scene-probability", { opacity: 0, duration: 0.5 }, 67.5);
+    
+    // 场景 6: 信息论 (68-82s)
+    tl.set("#scene-information", { opacity: 1 }, 68)
+      .from("#scene-information .section-header > *", { y: 30, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" }, 68.2)
+      .from("#scene-information .formula-item", { y: 30, opacity: 0, scale: 0.95, duration: 0.5, stagger: 0.12, ease: "back.out(1.2)" }, 69)
+      .to("#scene-information", { opacity: 0, duration: 0.5 }, 81.5);
+    
+    // 场景 7: 总结 (82-90s)
+    tl.set("#scene-summary", { opacity: 1 }, 82)
+      .from("#scene-summary .section-header > *", { y: 30, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" }, 82.2)
+      .from(".summary-card", { y: 40, opacity: 0, scale: 0.9, duration: 0.5, stagger: 0.15, ease: "back.out(1.2)" }, 83.5);
+    
+    window.__timelines["main"] = tl;
+    
+    // ===== 浏览器预览播放器 =====
+    if (!window.__hyperframes) {
+      const controls = document.createElement('div');
+      controls.className = 'player-controls';
+      
+      const playBtn = document.createElement('button');
+      playBtn.className = 'play-btn';
+      playBtn.textContent = '▶ 播放';
+      
+      const scenes = [
+        { name: '开场', time: 0 },
+        { name: '为什么', time: 8 },
+        { name: '微积分', time: 20 },
+        { name: '线代', time: 38 },
+        { name: '概率', time: 53 },
+        { name: '信息论', time: 68 },
+        { name: '总结', time: 82 }
+      ];
+      
+      let isPlaying = false;
+      playBtn.onclick = () => {
+        if (isPlaying) {
+          tl.pause();
+          playBtn.textContent = '▶ 播放';
+        } else {
+          tl.play();
+          playBtn.textContent = '⏸ 暂停';
+        }
+        isPlaying = !isPlaying;
+      };
+      
+      controls.appendChild(playBtn);
+      
+      scenes.forEach((scene, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'scene-btn';
+        btn.textContent = `${i + 1}. ${scene.name}`;
+        btn.onclick = () => {
+          tl.pause();
+          tl.time(scene.time);
+          playBtn.textContent = '▶ 播放';
+          isPlaying = false;
+        };
+        controls.appendChild(btn);
+      });
+      
+      document.body.appendChild(controls);
+      
+      // 顶部提示
+      const tip = document.createElement('div');
+      tip.className = 'player-tip';
+      tip.textContent = '💡 点击「播放」查看完整动画，或点击场景按钮跳转查看特定章节';
+      document.body.appendChild(tip);
+      
+      setTimeout(() => {
+        tip.style.opacity = '0';
+        tip.style.transition = 'opacity 0.5s';
+      }, 6000);
+    }
+  </script>
+</body>
+</html>
