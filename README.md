@@ -1,89 +1,79 @@
-# Html2Video - AI 教学视频自动制作
+# Html2Video - AI Teaching Video Automation Platform
 
-基于 HyperFrames + GSAP 的 AI 教学视频自动化制作平台。将 AI 基础知识（线性代数、机器学习、大模型原理等）转化为高质量的可视化教学视频，实现「脚本→动画→配音→视频」全流程自动化。
+An AI teaching video automation platform using HyperFrames + GSAP, transforming AI fundamentals (linear algebra, machine learning, LLM principles) into high-quality visual educational videos with full "script→animation→voiceover→video" pipeline automation.
 
-## 📦 项目概览
+## 📦 Project Overview
 
-### 已完成视频
+### Completed Videos
 
-| 视频名称 | 状态 | 说明 |
-|----------|------|------|
-| **AI 数学基础** | ✅ | 涵盖数学基础知识，公式动画渲染 |
-| **LLM Transformer 教程** | ✅ | 详解版教学视频，90秒，7个场景 |
-| **Python AI 教程** | ✅ | Python AI 入门教程 |
-| **机器学习框架指南** | ✅ | 主流机器学习框架介绍 |
-| **AI Agent 面试指南** | ✅ | AI Agent 相关面试准备 |
+| Video Name | Status | Description |
+|------------|--------|-------------|
+| **Python AI Tutorial** | ✅ | Python AI introductory tutorial |
+| **ML Frameworks Guide** | ✅ | Introduction to mainstream machine learning frameworks |
 
-## 🛠️ 技术栈
+## 🛠️ Tech Stack
 
-- **HyperFrames**: HTML-based 视频合成框架
-- **GSAP**: 动画库
-- **CSS**: 样式和布局
-- **KaTeX**: 数学公式渲染
+- **HyperFrames**: HTML-based video synthesis framework
+- **GSAP**: Animation library
+- **CSS**: Styling and layout
+- **KaTeX**: Mathematical formula rendering
 
-## 📂 项目结构
+## 📂 Project Structure
 
 ```
 Html2Video/
-├── ai-math-foundations/        # AI 数学基础
+├── python-ai-tutorial/       # Python AI Tutorial
 │   ├── index.html
 │   ├── DESIGN.md
 │   └── script.txt
-├── llm-transformer-tutorial/   # LLM Transformer 教程
-│   ├── index.html
-│   ├── DESIGN.md
-│   └── README.md
-├── python-ai-tutorial/         # Python AI 教程
-│   ├── index.html
-│   ├── DESIGN.md
-│   └── script.txt
-├── ml-frameworks-guide/        # 机器学习框架指南
+├── ml-frameworks-guide/      # ML Frameworks Guide
 │   ├── index.html
 │   ├── DESIGN.md
 │   └── 机器学习主流框架指南.md
-└── ai-agent-interview-guide/   # AI Agent 面试指南
-    └── index.html
+├── .gitignore
+├── package.json
+└── README.md
 ```
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 预览视频
+### Preview Video
 
 ```bash
-cd <项目目录>
+cd <project-directory>
 npx hyperframes preview
 ```
 
-浏览器中点击「播放」查看动画，或点击场景按钮跳转到特定章节。
+Click "Play" in the browser to view animations, or click scene buttons to jump to specific chapters.
 
-### 渲染输出
+### Render Output
 
 ```bash
-# 快速预览
+# Quick preview
 npx hyperframes render --quality draft
 
-# 标准质量
+# Standard quality
 npx hyperframes render --fps 30 --quality standard --output video.mp4
 
-# 高清版本
+# High quality
 npx hyperframes render --fps 60 --quality high --output video-hd.mp4
 ```
 
-## 🎨 视觉设计规范
+## 🎨 Visual Design Specs
 
-- **主背景色**: `#0D1117` (深邃夜空黑)
-- **科技蓝**: `#00D4FF`
-- **紫色**: `#A855F7`
-- **文字**: `#F0F6FC`
+- **Primary Background**: `#0D1117` (Dark Space Black)
+- **Tech Blue**: `#00D4FF`
+- **Purple**: `#A855F7`
+- **Text**: `#F0F6FC`
 
-详见各子目录的 `DESIGN.md` 文件。
+See `DESIGN.md` in each subdirectory for details.
 
-## 📖 学习建议
+## 📖 Learning Suggestions
 
-1. **先看一遍完整视频**了解全貌
-2. **逐场景细看**：点击场景按钮逐个理解
-3. **结合代码块**：视频中的伪代码帮助理解算法流程
+1. **Watch the full video first** to get the big picture
+2. **Go scene by scene**: Click scene buttons to understand step by step
+3. **Combine with code blocks**: The pseudo-code in the video helps understand algorithm flow
 
-## 📄 许可证
+## 📄 License
 
 MIT License

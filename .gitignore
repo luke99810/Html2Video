@@ -30,3 +30,8 @@ hyperframes*.log
 
 # WorkBuddy
 .workbuddy/
+
+# Removed from repo
+ai-agent-interview-guide/
+ai-math-foundations/
+llm-transformer-tutorial/
