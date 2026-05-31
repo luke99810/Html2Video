@@ -31,7 +31,10 @@ hyperframes*.log
 # WorkBuddy
 .workbuddy/
 
-# Removed from repo
+# Framework scripts (tooling, not needed in repo)
+framework/*/scripts/
+
+# Excluded video projects (local only)
 ai-agent-interview-guide/
 ai-math-foundations/
 llm-transformer-tutorial/

@@ -1,39 +1,56 @@
 # Html2Video - AI Teaching Video Automation Platform
 
-An AI teaching video automation platform using HyperFrames + GSAP, transforming AI fundamentals (linear algebra, machine learning, LLM principles) into high-quality visual educational videos with full "script→animation→voiceover→video" pipeline automation.
+An AI teaching video automation platform using HyperFrames + GSAP, transforming AI fundamentals into high-quality visual educational videos with full "script→animation→voiceover→video" pipeline automation.
 
-## 📦 Project Overview
+## 📦 Project Structure
 
-### Completed Videos
-
-| Video Name | Status | Description |
-|------------|--------|-------------|
-| **Python AI Tutorial** | ✅ | Python AI introductory tutorial |
-| **ML Frameworks Guide** | ✅ | Introduction to mainstream machine learning frameworks |
+```
+Html2Video/
+├── framework/                    # Core Framework
+│   ├── hyperframes/              # Main HyperFrames framework
+│   │   ├── SKILL.md             # Core skill definition
+│   │   ├── visual-styles.md     # Visual style guide
+│   │   ├── patterns.md          # Design patterns
+│   │   ├── house-style.md       # House style guide
+│   │   ├── data-in-motion.md    # Data visualization
+│   │   ├── palettes/            # Color palettes
+│   │   └── references/          # Technical references
+│   │       ├── typography.md
+│   │       ├── transitions.md
+│   │       ├── captions.md
+│   │       ├── tts.md
+│   │       ├── audio-reactive.md
+│   │       ├── player-template.md
+│   │       └── ...
+│   ├── gsap/                    # GSAP animation reference
+│   │   ├── SKILL.md
+│   │   └── references/
+│   │       └── effects.md
+│   ├── hyperframes-cli/         # CLI command tool
+│   │   └── SKILL.md
+│   ├── hyperframes-registry/    # Component registry
+│   │   ├── SKILL.md
+│   │   ├── examples/
+│   │   └── references/
+│   └── website-to-hyperframes/  # Web to video conversion
+│       ├── SKILL.md
+│       └── references/
+├── python-ai-tutorial/          # Example: Python AI Tutorial
+│   ├── index.html
+│   ├── DESIGN.md
+│   └── script.txt
+└── ml-frameworks-guide/         # Example: ML Frameworks Guide
+    ├── index.html
+    ├── DESIGN.md
+    └── 机器学习主流框架指南.md
+```
 
 ## 🛠️ Tech Stack
 
 - **HyperFrames**: HTML-based video synthesis framework
-- **GSAP**: Animation library
+- **GSAP**: Professional animation library
 - **CSS**: Styling and layout
 - **KaTeX**: Mathematical formula rendering
-
-## 📂 Project Structure
-
-```
-Html2Video/
-├── python-ai-tutorial/       # Python AI Tutorial
-│   ├── index.html
-│   ├── DESIGN.md
-│   └── script.txt
-├── ml-frameworks-guide/      # ML Frameworks Guide
-│   ├── index.html
-│   ├── DESIGN.md
-│   └── 机器学习主流框架指南.md
-├── .gitignore
-├── package.json
-└── README.md
-```
 
 ## 🚀 Quick Start
 
@@ -59,20 +76,28 @@ npx hyperframes render --fps 30 --quality standard --output video.mp4
 npx hyperframes render --fps 60 --quality high --output video-hd.mp4
 ```
 
-## 🎨 Visual Design Specs
+## 📚 Framework Modules
 
-- **Primary Background**: `#0D1117` (Dark Space Black)
-- **Tech Blue**: `#00D4FF`
-- **Purple**: `#A855F7`
-- **Text**: `#F0F6FC`
+### hyperframes
+The main framework providing core video composition capabilities with HTML-based approach.
 
-See `DESIGN.md` in each subdirectory for details.
+### hyperframes-cli
+Command-line interface tool for streamlined video generation workflow.
+
+### hyperframes-registry
+Component registry system for managing and reusing video building blocks.
+
+### website-to-hyperframes
+Conversion toolkit for transforming web content into HyperFrames video format.
+
+### gsap
+Animation reference library with professional effects and transitions.
 
 ## 📖 Learning Suggestions
 
-1. **Watch the full video first** to get the big picture
-2. **Go scene by scene**: Click scene buttons to understand step by step
-3. **Combine with code blocks**: The pseudo-code in the video helps understand algorithm flow
+1. **Start with the Framework**: Read `framework/hyperframes/SKILL.md` to understand core concepts
+2. **Explore Examples**: Check `python-ai-tutorial` or `ml-frameworks-guide` for reference
+3. **Customize**: Use palettes and visual styles to create your own video themes
 
 ## 📄 License
 
